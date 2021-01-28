@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="section-container">
     <div class="pagination">
       <vs-pagination
         :total="Math.ceil(Object.keys(emptyMatching).length / 30)"
@@ -16,7 +16,7 @@
     <form
       class="matching-container"
       @submit.prevent="updateMatchingHandler"
-      v-if="players && matchingData"
+      v-if="players && matching"
     >
       <vs-button
         color="#59A95D"
@@ -64,10 +64,8 @@
 </template>
 
 <script>
-import { getAllPlayersDataNormal } from "../../../utils/getAllPlayersData";
-import getMatching from "../../../utils/getMatching";
+import { mapActions, mapGetters } from "vuex";
 import { DATA_URL } from "../../../common";
-// import AddPlayerForm from "./AddPlayerForm";
 import "material-icons/iconfont/material-icons.css";
 
 export default {
@@ -76,10 +74,8 @@ export default {
   data() {
     return {
       page: 1,
-      matchingData: undefined,
       updatedMatching: {},
       // showPopup: false,
-      players: undefined,
       keyword: "",
       // leagueSelected: "",
       // teamSelected: "",
@@ -97,6 +93,10 @@ export default {
     };
   },
   methods: {
+    ...mapActions([
+      "fetchPlayers",
+      "fetchMatching",
+    ]),
     reverseUpdatedMatching(obj) {
       return Object.keys(obj).reduce((result, key) => {
         result[obj[key].trim()] = key;
@@ -125,7 +125,7 @@ export default {
         .then((response) => response.json())
         .then(async (data) => {
           console.log("Success:", data);
-          this.matchingData = await getMatching();
+          await this.fetchMatching();
           this.success = true;
         })
         .catch((error) => {
@@ -159,7 +159,7 @@ export default {
         })
           .then((response) => response.json())
           .then(async () => {
-            this.matchingData = await getMatching();
+            await this.fetchMatching();
             this.success = true;
           })
           .catch((error) => {
@@ -169,9 +169,10 @@ export default {
     },
   },
   computed: {
+    ...mapGetters(["players", "matching"]),
     emptyMatching() {
-      if (this.players && this.matchingData) {
-        const matched = Object.values(this.matchingData);
+      if (this.players && this.matching) {
+        const matched = Object.values(this.matching);
         const players = Object.keys(this.players);
         const result = players
           .filter((player) => {
@@ -213,13 +214,13 @@ export default {
     },
   },
   watch: {
-    matchingData(nv) {
+    matching(nv) {
       if (nv && this.players) {
         this.$vs.loading.close();
       }
     },
     players(nv) {
-      if (nv && this.matchingData) {
+      if (nv && this.matching) {
         this.$vs.loading.close();
       }
     },
@@ -233,104 +234,104 @@ export default {
   },
   async created() {
     this.$vs.loading();
-    this.players = await getAllPlayersDataNormal();
-    this.matchingData = await getMatching();
+    this.fetchPlayers();
+    this.fetchMatching();
   },
   beforeDestroy() {
-    console.log("destroy", this.players);
-    this.players = null;
-    this.matchingData = null;
-    console.log("destroyed", this.players);
   },
 };
 </script>
 
 <style scoped lang="scss">
-.pagination {
-  width: 50%;
-  margin: 20px 0 0 0;
-}
+.section-container {
+  width:100%;
 
-.search-bar {
-  width: 100%;
-  label {
+  .pagination {
+    width: 50%;
+    margin: 20px 0 0 0;
+  }
+
+  .search-bar {
+    width: 100%;
+    label {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+      margin: 20px 0 0 20px;
+      font-size: 1.2rem;
+      input {
+        width: 30%;
+        font-size: 1.3rem;
+        padding: 5px;
+        margin: 10px 0 0 0;
+        transition: all 0.3s;
+      }
+    }
+  }
+  .matching-container {
+    width: 60%;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
-    margin: 20px 0 0 20px;
-    font-size: 1.2rem;
-    input {
-      width: 30%;
-      font-size: 1.3rem;
+    padding: 10px 0 0 20px;
+
+    .con-vs-alert-success {
+      background: #46c93a80;
+      color: white;
+      margin: 15px;
+      width: 97%;
+    }
+
+    h3 {
+      font-weight: bold;
+      width: 100%;
+      text-align: center;
       padding: 5px;
-      margin: 10px 0 0 0;
-      transition: all 0.3s;
+      margin: 0 0 20px 0;
     }
-  }
-}
-.matching-container {
-  width: 60%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-  padding: 10px 0 0 20px;
 
-  .con-vs-alert-success {
-    background: #46c93a80;
-    color: white;
-    margin: 15px;
-    width: 97%;
-  }
-
-  h3 {
-    font-weight: bold;
-    width: 100%;
-    text-align: center;
-    padding: 5px;
-    margin: 0 0 20px 0;
-  }
-
-  .player {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    margin: 3px 0 3px 0;
-    padding: 5px;
-    transition: all 0.3s;
-    border-radius: 5px;
-
-    &:hover {
-      background-color: #afafaf;
-    }
-    .player-name-club {
-      width: 70%;
+    .player {
+      width: 100%;
       display: flex;
       flex-direction: row;
       justify-content: space-between;
       align-items: center;
-    }
-    .selected {
-      background-color: #ff9797;
+      margin: 3px 0 3px 0;
       padding: 5px;
-    }
-    input {
-      padding: 5px;
-      width: 25%;
-    }
-    .delete-player {
-      width: 20%;
-      margin: 0 0 0 10px;
+      transition: all 0.3s;
       border-radius: 5px;
-      border: none;
-      padding: 5px;
-      transition: all 0.2s;
-      background-color: #ff9797;
+
       &:hover {
-        background-color: #d66161;
+        background-color: #afafaf;
+      }
+      .player-name-club {
+        width: 70%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .selected {
+        background-color: #ff9797;
+        padding: 5px;
+      }
+      input {
+        padding: 5px;
+        width: 25%;
+      }
+      .delete-player {
+        width: 20%;
+        margin: 0 0 0 10px;
+        border-radius: 5px;
+        border: none;
+        padding: 5px;
+        transition: all 0.2s;
+        background-color: #ff9797;
+        &:hover {
+          background-color: #d66161;
+        }
       }
     }
   }

@@ -1,6 +1,7 @@
 <template>
   <div class="admin-container">
-    <div class="admin-menu">
+    admin home
+    <!-- <div class="admin-menu">
       <h1 class="admin-menu-header">ADMIN MENU</h1>
       <div class="admin-menu-items">
         <a
@@ -165,46 +166,44 @@
       </div>
     </div>
     <div class="admin-details">
-      <!-- <keep-alive> -->
       <component v-bind:is="chosenComponent" />
-      <!-- </keep-alive> -->
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script>
-const PlayersEdit = () => import("./Players/PlayersEdit");
-const PlayersPoints = () => import("./Players/PlayersPoints");
-const SyncPoints = () => import("./Players/SyncPoints");
-const Rounds = () => import("./Rounds/Rounds");
-const UsersPersonal = () => import("./Users/UsersPersonal");
-const UsersTeams = () => import("./Users/UsersTeams");
-const Transfers = () => import("./Transfers/Transfers");
-const Leagues = () => import("./Leagues/Leagues");
-const H2HLeague = () => import("./H2HLeague/H2HLeague");
-const CupGroupsAndRounds = () => import("./Cup/CupGroupsAndRounds");
-const CupSquadSelect = () => import("./Cup/CupSquadSelect");
-const CupMatchPoints = () => import("./Cup/CupMatchPoints");
-const Matching = () => import("./Matching/Matching");
-const AdminHomeSection = () => import("./AdminHomeSection/AdminHomeSection");
+// const PlayersEdit = () => import("./Players/PlayersEdit");
+// const PlayersPoints = () => import("./Players/PlayersPoints");
+// const SyncPoints = () => import("./Players/SyncPoints");
+// const Rounds = () => import("./Rounds/Rounds");
+// const UsersPersonal = () => import("./Users/UsersPersonal");
+// const UsersTeams = () => import("./Users/UsersTeams");
+// const Transfers = () => import("./Transfers/Transfers");
+// const Leagues = () => import("./Leagues/Leagues");
+// const H2HLeague = () => import("./H2HLeague/H2HLeague");
+// const CupGroupsAndRounds = () => import("./AdminPanel/Cup/CupGroupsAndRounds");
+// const CupSquadSelect = () => import("./Cup/CupSquadSelect");
+// const CupMatchPoints = () => import("./Cup/CupMatchPoints");
+// const Matching = () => import("./Matching/Matching");
+// const AdminHomeSection = () => import("./AdminPanel/AdminHomeSection/AdminHomeSection");
 
 export default {
-  name: "AdminPanel",
+  name: "AdminHome",
   components: {
-    Rounds,
-    PlayersEdit,
-    PlayersPoints,
-    SyncPoints,
-    UsersPersonal,
-    UsersTeams,
-    Transfers,
-    Leagues,
-    H2HLeague,
-    CupGroupsAndRounds,
-    CupSquadSelect,
-    CupMatchPoints,
-    Matching,
-    AdminHomeSection
+    // Rounds,
+    // PlayersEdit,
+    // PlayersPoints,
+    // SyncPoints,
+    // UsersPersonal,
+    // UsersTeams,
+    // Transfers,
+    // Leagues,
+    // H2HLeague,
+    // CupGroupsAndRounds,
+    // CupSquadSelect,
+    // CupMatchPoints,
+    // Matching,
+    // AdminHomeSection
   },
   data() {
     return {
