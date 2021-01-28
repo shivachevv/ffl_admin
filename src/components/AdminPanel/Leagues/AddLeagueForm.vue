@@ -14,9 +14,9 @@
       <label class="select"
         >Users
         <select v-model="selectedUser" placeholder="Select an user">
-          <option :key="u" :value="u" v-for="u in Object.keys(users)">{{
-            users[u].userTeam
-          }}</option>
+          <option :key="u" :value="u" v-for="u in Object.keys(users)">
+            {{ users[u].userTeam }}
+          </option>
         </select>
       </label>
       <!-- <vs-select
@@ -59,11 +59,10 @@
 import makeNewLeague from "../../../models/League";
 
 import { DATA_URL } from "../../../common";
-import getAllLeagues from "../../../utils/getAllLeagues";
+import { mapActions, mapGetters } from "vuex";
 // import { addPlayerPts, makeNewPlayer } from "../../../models/Player";
 // import { getAllPlayersDataCathegorized } from "../../../utils/getAllPlayersData";
 import { v4 as uuidv4 } from "uuid";
-import getAllUsers from "../../../utils/getAllUsers";
 // import { getCurrentRound } from "../../../utils/getCurrentRound";
 
 export default {
@@ -76,21 +75,21 @@ export default {
   },
   data() {
     return {
-      users: undefined,
       newLeague: {
-        teams: []
+        teams: [],
       },
       selectedUser: undefined,
-      updatedLeagues: undefined,
+      // updatedLeagues: undefined,
       //   newPlayer: {},
       //   showClub: false,
       //   positions: ["GK", "DL", "DC", "DR", "ML", "MC", "MR", "ST"],
       error: false,
       errorMsg: "",
-      success: false
+      success: false,
     };
   },
   methods: {
+    ...mapActions(["fetchLeagues", "fetchUsers"]),
     async addLeagueHandler() {
       if (this.isNewLeagueOK()) {
         const { name, teams } = this.newLeague;
@@ -113,7 +112,7 @@ export default {
     createEditedUsers(leagueId, leagueTeams) {
       let copy = JSON.parse(JSON.stringify(this.users));
 
-      Object.keys(copy).forEach(id => {
+      Object.keys(copy).forEach((id) => {
         if (leagueTeams.includes(id)) {
           let user = copy[id];
           if (user["league"]) {
@@ -131,18 +130,18 @@ export default {
         method: "PATCH",
         mode: "cors",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       })
-        .then(response => response.json())
-        .then(async data => {
+        .then((response) => response.json())
+        .then(async (data) => {
           console.log("Success:", data);
-          this.success = true;
           this.$vs.loading();
-          this.users = await getAllUsers();
+          await this.fetchUsers();
+          this.success = true;
         })
-        .catch(error => {
+        .catch((error) => {
           console.error("Error:", error);
           this.error = true;
           this.errorMsg = error;
@@ -153,29 +152,29 @@ export default {
         method: "PATCH",
         mode: "cors",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       })
-        .then(response => response.json())
-        .then(async data => {
+        .then((response) => response.json())
+        .then(async (data) => {
           console.log("Success:", data);
-          this.success = true;
           this.$vs.loading();
-          this.updatedLeagues = await getAllLeagues();
-          this.$emit("updatedLeagues", this.updatedLeagues);
+          await this.fetchLeagues();
+          this.$emit("updatedLeagues", this.leagues);
+          this.success = true;
         })
-        .catch(error => {
+        .catch((error) => {
           console.error("Error:", error);
           this.error = true;
           this.errorMsg = error;
         });
     },
     removePlayerFromLeague(u) {
-      return (this.newLeague.teams = this.newLeague.teams.filter(x => {
+      return (this.newLeague.teams = this.newLeague.teams.filter((x) => {
         return x !== u;
       }));
-    }
+    },
     // createPlayerPointsObj(rnd) {
     //   const playerStatsEmptyValues = Array(20).fill("");
     //   let result = {};
@@ -223,7 +222,9 @@ export default {
     //     });
     // }
   },
-  computed: {},
+  computed: {
+    ...mapGetters(["users", "leagues"]),
+  },
   watch: {
     selectedUser(nv) {
       if (nv && !this.newLeague.teams.includes(nv)) {
@@ -246,12 +247,12 @@ export default {
       if (nv) {
         this.$vs.loading.close();
       }
-    }
+    },
   },
   async created() {
     this.$vs.loading();
-    this.users = await getAllUsers();
-  }
+    this.fetchUsers();
+  },
 };
 </script>
 

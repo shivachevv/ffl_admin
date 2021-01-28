@@ -104,9 +104,10 @@
 import AddLeagueForm from "./AddLeagueForm";
 // import { getAllPlayersDataNormal } from "../../../utils/getAllPlayersData";
 import { DATA_URL } from "../../../common";
-import getAllLeagues from "../../../utils/getAllLeagues";
+import { mapActions, mapGetters } from "vuex";
+// import getAllLeagues from "../../../utils/getAllLeagues";
 // import { getCurrentRound } from "../../../utils/getCurrentRound";
-import getAllUsers from "../../../utils/getAllUsers";
+// import getAllUsers from "../../../utils/getAllUsers";
 import makeNewLeague from "../../../models/League";
 // import makeNewTransfer from "../../../models/Transfer";
 // import { getAllPlayersDataNormal } from "../../../utils/getAllPlayersData";
@@ -119,8 +120,6 @@ export default {
   },
   data() {
     return {
-      leagues: undefined,
-      users: undefined,
       //   currentRound: undefined,
       //   transfers: undefined,
       //   selectedRoundTransfers: undefined,
@@ -142,6 +141,10 @@ export default {
     };
   },
   methods: {
+    ...mapActions([
+      "fetchLeagues",
+      "fetchUsers",
+    ]),
     openAddLeaguePopup() {
       return (this.showPopup = true);
     },
@@ -198,9 +201,9 @@ export default {
         .then(response => response.json())
         .then(async data => {
           console.log("Success:", data);
-          this.success = true;
           this.$vs.loading();
-          this.users = await getAllUsers();
+          await this.fetchUsers();
+          this.success = true;
         })
         .catch(error => {
           console.error("Error:", error);
@@ -220,9 +223,9 @@ export default {
         .then(response => response.json())
         .then(async data => {
           console.log("Success:", data);
-          this.success = true;
           this.$vs.loading();
-          this.leagues = await getAllLeagues();
+          await this.fetchLeagues();
+          this.success = true;
         })
         .catch(error => {
           console.error("Error:", error);
@@ -275,10 +278,10 @@ export default {
         .then(response => response.json())
         .then(async data => {
           console.log("Success:", data);
-          this.success = true;
           this.$vs.loading();
           this.leagueSelected = undefined;
-          this.leagues = await getAllLeagues();
+          await this.fetchLeagues();
+          this.success = true;
         })
         .catch(error => {
           console.error("Error:", error);
@@ -604,10 +607,12 @@ export default {
     //   return (this.roundTotal = total);
     // }
   },
-  computed: {},
+  computed: {
+    ...mapGetters(["leagues", "users"])
+  },
   watch: {
     leagues(nv) {
-      if (nv) {
+      if (nv && this.users) {
         this.$vs.loading.close();
       }
     },
@@ -636,8 +641,8 @@ export default {
   },
   async created() {
     this.$vs.loading();
-    this.leagues = await getAllLeagues();
-    this.users = await getAllUsers();
+    this.fetchLeagues();
+    this.fetchUsers();
     // this.currentRound = await getCurrentRound();
     // this.transfers = await getAllTransfers();
   }
