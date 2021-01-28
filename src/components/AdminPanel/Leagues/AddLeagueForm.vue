@@ -161,7 +161,7 @@ export default {
           console.log("Success:", data);
           this.$vs.loading();
           await this.fetchLeagues();
-          this.$emit("updatedLeagues", this.leagues);
+          // this.$emit("updatedLeagues", this.leagues);
           this.success = true;
         })
         .catch((error) => {

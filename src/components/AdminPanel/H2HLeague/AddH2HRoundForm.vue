@@ -67,7 +67,8 @@
 <script>
 import makeNewH2HRound from "../../../models/H2HRound";
 import { DATA_URL } from "../../../common";
-import getAllH2HRounds from '../../../utils/getAllH2HRounds';
+import { mapActions } from "vuex";
+
 // import getAllLeagues from "../../../utils/getAllLeagues";
 // import { addPlayerPts, makeNewPlayer } from "../../../models/Player";
 // import { getAllPlayersDataCathegorized } from "../../../utils/getAllPlayersData";
@@ -103,7 +104,6 @@ export default {
         name: ""
       },
       selectedUser: undefined,
-      updatedLeagues: undefined,
       //   newPlayer: {},
       //   showClub: false,
       //   positions: ["GK", "DL", "DC", "DR", "ML", "MC", "MR", "ST"],
@@ -113,6 +113,9 @@ export default {
     };
   },
   methods: {
+    ...mapActions([
+      "fetchH2h",
+    ]),
     async addRoundHandler() {
       this.isNewRoundOK();
       if (this.isNewRoundOK()) {
@@ -156,10 +159,9 @@ export default {
         .then(response => response.json())
         .then(async data => {
           console.log("Success:", data);
-          this.success = true;
+          await this.fetchH2h()
           this.$vs.loading.close()
-          this.updatedRounds = await getAllH2HRounds();
-          this.$emit("updatedH2HRounds", this.updatedRounds);
+          this.success = true;
         })
         .catch(error => {
           console.error("Error:", error);

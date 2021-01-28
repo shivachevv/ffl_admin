@@ -9,9 +9,8 @@
       :active.sync="showPopup"
     >
       <AddH2HRoundForm
-        :h2hrounds="h2hrounds"
+        :h2hrounds="h2h"
         :users="users"
-        @updatedH2HRounds="h2hrounds = $event"
       />
     </vs-popup>
     <vs-button
@@ -60,7 +59,7 @@
       </label>
     </div>-->
 
-    <div class="rounds" v-if="h2hrounds">
+    <div class="rounds" v-if="h2h">
       <a
         href
         v-for="rnd in sortedRounds"
@@ -133,13 +132,12 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from "vuex";
 import AddH2HRoundForm from "./AddH2HRoundForm";
 // import { getAllPlayersDataNormal } from "../../../utils/getAllPlayersData";
 import { DATA_URL } from "../../../common";
 // import getAllLeagues from "../../../utils/getAllLeagues";
 // import { getCurrentRound } from "../../../utils/getCurrentRound";
-import getAllUsers from "../../../utils/getAllUsers";
-import getAllH2HRounds from "../../../utils/getAllH2HRounds";
 import uploadAllPlayers from "../../../utils/uploadAllPlayers";
 // import { getAllPlayersDataNormal } from '../../../utils/getAllPlayersData';
 // import makeNewLeague from "../../../models/League";
@@ -155,9 +153,6 @@ export default {
   },
   data() {
     return {
-      h2hrounds: undefined,
-      users: undefined,
-      // players: undefined,
       //   currentRound: undefined,
       //   transfers: undefined,
       //   selectedRoundTransfers: undefined,
@@ -180,6 +175,10 @@ export default {
     };
   },
   methods: {
+    ...mapActions([
+      "fetchH2h",
+      "fetchUsers",
+    ]),
     test() {
       // return axios
       //   .get(DATA_URL + "h2h.json", {
@@ -311,7 +310,7 @@ export default {
           console.log("Success:", data);
           this.success = true;
           this.$vs.loading();
-          this.h2hrounds = await getAllH2HRounds();
+          await this.fetchH2h();
         })
         .catch((error) => {
           console.error("Error:", error);
@@ -391,7 +390,7 @@ export default {
     //     });
     // },
     selectRoundHandler(r) {
-      this.selectedRound = this.h2hrounds[r];
+      this.selectedRound = this.h2h[r];
       this.selectedRoundNum = r;
     },
     // async confirmTransfer(tr) {
@@ -674,20 +673,21 @@ export default {
     // }
   },
   computed: {
+    ...mapGetters(["h2h", "users"]),
     sortedRounds() {
-      return Object.keys(this.h2hrounds).sort((a, b) => {
+      return Object.keys(this.h2h).sort((a, b) => {
         return Number(a.substring(1)) - Number(b.substring(1));
       });
     },
   },
   watch: {
-    h2hrounds(nv) {
+    h2h(nv) {
       if (nv && this.users) {
         this.$vs.loading.close();
       }
     },
     users(nv) {
-      if (nv && this.h2hrounds) {
+      if (nv && this.h2h) {
         this.$vs.loading.close();
       }
     },
@@ -706,8 +706,8 @@ export default {
   },
   async created() {
     // this.$vs.loading();
-    this.h2hrounds = await getAllH2HRounds();
-    this.users = await getAllUsers();
+    await this.fetchH2h();
+    await this.fetchUsers();
     // this.players = await getAllPlayersDataNormal()
     // this.currentRound = await getCurrentRound();
     // this.transfers = await getAllTransfers();

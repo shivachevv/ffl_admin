@@ -8,7 +8,7 @@
       title="Create new league!"
       :active.sync="showPopup"
     >
-      <AddLeagueForm :leagues="leagues" @updatedLeagues="leagues = $event" />
+      <AddLeagueForm :leagues="leagues" />
     </vs-popup>
     <vs-button
       class="add-league"
