@@ -6,11 +6,11 @@
       class="holamundo"
       title="Create new player!"
       :active.sync="showPopup"
-      v-if="players"
+      v-if="cathegorizedPlayers"
       @close="closePopup"
     >
       <AddPlayerForm
-        :players="players"
+        :players="cathegorizedPlayers"
         @updatedPlayers="players = $event"
         :leagueSelected="leagueSelected"
         :teamSelected="teamSelected"
@@ -27,9 +27,9 @@
     >
 
     <!-- LEAGUES -->
-    <div class="leagues-container" v-if="players">
+    <div class="leagues-container" v-if="cathegorizedPlayers">
       <a
-        v-for="l in Object.keys(players)"
+        v-for="l in Object.keys(cathegorizedPlayers)"
         :key="l"
         @click.prevent="selectLeagueHandler(l)"
         :class="{ selected: leagueSelected === l }"
@@ -50,9 +50,9 @@
       </a>
     </div>
     <!-- TEAMS -->
-    <div class="teams-container" v-if="players && leagueSelected">
+    <div class="teams-container" v-if="cathegorizedPlayers && leagueSelected">
       <a
-        v-for="(t, i) in Object.keys(players[leagueSelected])"
+        v-for="(t, i) in Object.keys(cathegorizedPlayers[leagueSelected])"
         :key="i"
         @click.prevent="selectTeamHandler(t)"
         class="edit-player-menu-item"
@@ -63,12 +63,12 @@
     <!-- PLAYERS -->
     <div
       class="players-container"
-      v-if="players && leagueSelected && teamSelected"
+      v-if="cathegorizedPlayers && leagueSelected && teamSelected"
     >
       <div class="players-names">
         <a
           v-for="p in sortedPlayers(
-            Object.values(players[leagueSelected][teamSelected])
+            Object.values(cathegorizedPlayers[leagueSelected][teamSelected])
           )"
           :key="p.id"
           @click.prevent="selectPlayerHandler(p)"
@@ -87,7 +87,11 @@
               v-model="playerEdited.country"
               @change="playerEdited.club = ''"
             >
-              <option :key="l" :value="l" v-for="l in Object.keys(players)">
+              <option
+                :key="l"
+                :value="l"
+                v-for="l in Object.keys(cathegorizedPlayers)"
+              >
                 {{ countryMap[l] }}
               </option>
             </select>
@@ -108,14 +112,16 @@
           <label class="select">
             Club:
             <select
-              v-if="players[playerEdited.country]"
+              v-if="cathegorizedPlayers[playerEdited.country]"
               :label="playerSelected.club"
               v-model="playerEdited.club"
             >
               <option
                 :key="l"
                 :value="l"
-                v-for="l in Object.keys(players[playerEdited.country])"
+                v-for="l in Object.keys(
+                  cathegorizedPlayers[playerEdited.country]
+                )"
               >
                 {{ l }}
               </option>
@@ -130,7 +136,7 @@
               <option
                 :key="l"
                 :value="l"
-                v-for="l in Object.keys(players[leagueSelected])"
+                v-for="l in Object.keys(cathegorizedPlayers[leagueSelected])"
               >
                 {{ l }}
               </option>
@@ -241,12 +247,12 @@
 </template>
 
 <script>
-import { getAllPlayersDataCathegorized } from "../../../utils/getAllPlayersData";
+// import { getAllPlayersDataCathegorized } from "../../../utils/getAllPlayersData";
 import { teamCodes, DATA_URL, countryMap } from "../../../common";
 import AddPlayerForm from "./AddPlayerForm";
 import { setLastUpdateDB } from "../../../utils/setLastUpdate";
 import updateLightPlayers from "../../../utils/updateLightPlayers";
-
+import { mapActions, mapGetters } from "vuex";
 export default {
   name: "PlayersEdit",
   components: {
@@ -259,7 +265,7 @@ export default {
         "60e2f9e6-af52-4b5e-8918-94d9c79fd1c4": "Maradona",
       },
       showPopup: false,
-      players: undefined,
+      // players: undefined,
       leagueSelected: "",
       teamSelected: "",
       playerSelected: "",
@@ -278,6 +284,7 @@ export default {
     };
   },
   methods: {
+    ...mapActions(["fetchCathegorizedPlayers"]),
     closePopup() {
       return (this.showPopup = false);
     },
@@ -345,7 +352,7 @@ export default {
           console.log("Success:", data);
           this.$vs.loading();
           this.deselectPlayer();
-          this.players = await getAllPlayersDataCathegorized();
+          await this.fetchCathegorizedPlayers();
           setLastUpdateDB();
           updateLightPlayers();
           this.success = true;
@@ -357,7 +364,7 @@ export default {
     editPlayerFormHandler() {
       const payload = this.mergePlayers(this.playerEdited, this.playerSelected);
       console.log(payload);
-      if (this.players[payload.country][payload.club]) {
+      if (this.cathegorizedPlayers[payload.country][payload.club]) {
         this.$vs.dialog({
           color: "success",
           title: "Confirm Edit",
@@ -380,7 +387,8 @@ export default {
         color: "success",
         title: "Confirm Delete",
         text: `Are you sure you want to delete ${
-          this.players[this.leagueSelected][this.teamSelected][id].name
+          this.cathegorizedPlayers[this.leagueSelected][this.teamSelected][id]
+            .name
         }?`,
         accept: () => deletePlayer(id),
       });
@@ -397,7 +405,7 @@ export default {
           .then(async () => {
             this.playerSelected = "";
             this.$vs.loading();
-            this.players = await getAllPlayersDataCathegorized();
+            await this.fetchCathegorizedPlayers();
             setLastUpdateDB();
             updateLightPlayers();
             this.$vs.loading.close();
@@ -420,13 +428,13 @@ export default {
       return (this.playerEditedAvail = {});
     },
   },
-  computed: {},
+  computed: { ...mapGetters(["cathegorizedPlayers"]) },
   watch: {
-    players(nv) {
-      if (nv) {
-        this.$vs.loading.close();
-      }
-    },
+    // cathegorizedPlayers(nv) {
+    //   if (nv) {
+    //     // this.$vs.loading.close();
+    //   }
+    // },
     success(nv) {
       if (nv === true) {
         setTimeout(() => {
@@ -436,8 +444,8 @@ export default {
     },
   },
   async created() {
-    this.$vs.loading();
-    this.players = await getAllPlayersDataCathegorized();
+    // this.$vs.loading();
+    // await this.fetchCathegorizedPlayers();
   },
 };
 </script>

@@ -41,16 +41,15 @@
 </template>
 
 <script>
-import { getCurrentRound, setNewRound } from "../../../utils/getCurrentRound";
-import { getAllPlayersDataNormal } from "../../../utils/getAllPlayersData";
+import { mapActions, mapGetters } from "vuex";
+import {  setNewRound } from "../../../utils/getCurrentRound";
 import { DATA_URL } from "../../../common";
 import { addPlayerPts } from "../../../models/Player";
 import { addUserRound } from "../../../models/User";
-import getAllUsers from "../../../utils/getAllUsers";
 import pointsCalculator from "../../../utils/pointsCalculator";
 import { setLastUpdateDB } from "../../../utils/setLastUpdate";
 import updateLightPlayers from "../../../utils/updateLightPlayers";
-import updateStats from '../../../utils/updateStats'
+import updateStats from "../../../utils/updateStats";
 // import getAllH2HRounds from "../../../utils/getAllH2HRounds";
 
 export default {
@@ -58,9 +57,6 @@ export default {
   components: {},
   data() {
     return {
-      currentRound: undefined,
-      players: undefined,
-      users: undefined,
       h2hrounds: undefined,
       success: false,
       error: false,
@@ -68,6 +64,11 @@ export default {
     };
   },
   methods: {
+    ...mapActions([
+      "fetchPlayers",
+      "fetchCurrentRound",
+      "fetchUsers",
+    ]),
     // deleteRndHandler() {},
     addRndHandler() {
       const editedPlayers = this.createUpdatedPlayersObject();
@@ -81,7 +82,7 @@ export default {
           this.currentRound + 1
         }?`,
         accept: async () => {
-          await updateStats()
+          await updateStats();
           this.fetchNewRound();
           this.fetchNewRndDataToPlayers(editedPlayers);
           this.fetchNewRndDataToUsers(editedUsers);
@@ -90,7 +91,8 @@ export default {
     },
     async fetchNewRound() {
       try {
-        this.currentRound = await setNewRound(this.currentRound + 1);
+        await setNewRound(this.currentRound + 1);
+        this.fetchCurrentRound()
       } catch (error) {
         this.error = true;
         this.errorMsg = error;
@@ -108,7 +110,7 @@ export default {
       })
         .then((response) => response.json())
         .then(async () => {
-          this.users = await getAllUsers();
+          await this.fetchUsers();
           this.success = true;
           this.$vs.loading.close();
         })
@@ -132,7 +134,7 @@ export default {
       })
         .then((response) => response.json())
         .then(async () => {
-          this.players = await getAllPlayersDataNormal();
+          await this.fetchPlayers();
           setLastUpdateDB();
           updateLightPlayers();
           this.success = true;
@@ -339,8 +341,8 @@ export default {
       );
     },
     test() {
-      console.log('stats call');
-      updateStats()
+      console.log("stats call");
+      updateStats();
       // const teams = Object.values(users)
       //   .filter((x) => {
       //     if (x.code && x.code >= 12) {
@@ -416,25 +418,17 @@ export default {
       //   });
     },
   },
-  computed: {},
+  computed: {
+    ...mapGetters(["players", "currentRound", "users"]),
+  },
   watch: {
-    players(nv) {
-      if (nv && this.users) {
-        this.$vs.loading.close();
-      }
-    },
-    // currentRound(nv) {
-    //   if (nv && this.players && this.users) {
+    // players(nv) {
+    //   if (nv && this.users) {
     //     this.$vs.loading.close();
     //   }
     // },
-    users(nv) {
-      if (nv && this.players) {
-        this.$vs.loading.close();
-      }
-    },
-    // h2hrounds(nv) {
-    //   if (nv && this.players && this.currentRound && this.users) {
+    // users(nv) {
+    //   if (nv && this.players) {
     //     this.$vs.loading.close();
     //   }
     // },
@@ -445,19 +439,12 @@ export default {
         }, 3000);
       }
     },
-    // error(nv) {
-    //   if (nv === true) {
-    //     setTimeout(() => {
-    //       this.error = false;
-    //     }, 3000);
-    //   }
-    // }
   },
   async created() {
-    this.$vs.loading();
-    getCurrentRound().then((data) => (this.currentRound = data));
-    getAllPlayersDataNormal().then((data) => (this.players = data));
-    getAllUsers().then((data) => (this.users = data));
+    // this.$vs.loading();
+    // this.fetchCurrentRound();
+    // this.fetchPlayers();
+    // this.fetchUsers();
     // getAllH2HRounds().then(data => (this.h2hrounds = data));
   },
 };

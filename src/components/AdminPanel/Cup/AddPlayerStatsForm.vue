@@ -37,7 +37,7 @@
 <script>
 // import makeNewH2HRound from "../../../models/H2HRound";
 import { DATA_URL } from "../../../common";
-import getAllCupGroups from "../../../utils/getAllCupGroups";
+import { mapActions } from "vuex";
 // import getAllLeagues from "../../../utils/getAllLeagues";
 // import { addPlayerPts, makeNewPlayer } from "../../../models/Player";
 // import { getAllPlayersDataCathegorized } from "../../../utils/getAllPlayersData";
@@ -92,6 +92,9 @@ export default {
     };
   },
   methods: {
+    ...mapActions([
+      "fetchCup",
+    ]),
     async addStatsHandler() {
       try {
         const merged = this.mergeStats(this.stats, this.player[1].stats);
@@ -106,7 +109,6 @@ export default {
       }
     },
     fetchNewStats(payload) {
-      console.log(payload);
       this.$vs.loading();
       return fetch(
         `${DATA_URL}cup/${this.group}/rounds/${this.round}/match${this.match}/${this.team}/squad/${this.player[0]}.json`,
@@ -123,10 +125,9 @@ export default {
         .then(async data => {
           console.log("Success:", data);
           this.deselectStats()
-          this.success = true;
           this.$vs.loading.close();
-          this.updatedGroups = await getAllCupGroups();
-          this.$emit("updatedCupGroups", this.updatedGroups);
+          await this.fetchCup()
+          this.success = true;
         })
         .catch(error => {
           console.error("Error:", error);

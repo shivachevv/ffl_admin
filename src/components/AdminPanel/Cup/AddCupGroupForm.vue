@@ -86,7 +86,7 @@
 <script>
 // import makeNewH2HRound from "../../../models/H2HRound";
 import { DATA_URL } from "../../../common";
-import getAllCupGroups from "../../../utils/getAllCupGroups";
+import { mapActions } from "vuex";
 // import getAllLeagues from "../../../utils/getAllLeagues";
 // import { addPlayerPts, makeNewPlayer } from "../../../models/Player";
 // import { getAllPlayersDataCathegorized } from "../../../utils/getAllPlayersData";
@@ -96,10 +96,6 @@ import getAllCupGroups from "../../../utils/getAllCupGroups";
 export default {
   name: "AddCupGroupForm",
   props: {
-    // cupGroups: {
-    //   required: true,
-    //   type: Object
-    // },
     users: {
       required: true,
       type: Object
@@ -112,7 +108,7 @@ export default {
         teams: []
       },
       selectedUser: undefined,
-      updatedGroups: undefined,
+      // updatedGroups: undefined,
       //   newPlayer: {},
       //   showClub: false,
       //   positions: ["GK", "DL", "DC", "DR", "ML", "MC", "MR", "ST"],
@@ -122,6 +118,9 @@ export default {
     };
   },
   methods: {
+    ...mapActions([
+      "fetchCup",
+    ]),
     async addRoundHandler() {
       if (this.isNewGroupOK()) {
         // const { roundHeld, matches } = this.newRound;
@@ -153,10 +152,9 @@ export default {
         .then(response => response.json())
         .then(async data => {
           console.log("Success:", data);
-          this.success = true;
           this.$vs.loading.close();
-          this.updatedGroups = await getAllCupGroups();
-          this.$emit("updatedCupGroups", this.updatedGroups);
+          await this.fetchCup
+          this.success = true;
         })
         .catch(error => {
           console.error("Error:", error);

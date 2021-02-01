@@ -140,17 +140,18 @@
 
 <script>
 import { getPointsFromTool } from "../../../utils/getPointsFromTool";
-import { getAllPlayersDataNormal } from "../../../utils/getAllPlayersData";
+// import { getAllPlayersDataNormal } from "../../../utils/getAllPlayersData";
 import syncPointsHelper from "../../../utils/syncPointsHelper";
-import { getCurrentRound } from "../../../utils/getCurrentRound";
+// import { getCurrentRound } from "../../../utils/getCurrentRound";
 import { DATA_URL, roundDates } from "../../../common";
-import getAllLeagues from "../../../utils/getAllLeagues";
-import getAllUsers from "../../../utils/getAllUsers";
-import getStandings from "../../../utils/getStandings";
+// import getAllLeagues from "../../../utils/getAllLeagues";
+// import getAllUsers from "../../../utils/getAllUsers";
+// import getStandings from "../../../utils/getStandings";
 // import standingsHelper from "../../../utils/standingsHelper";
 import newStandingsHelper from "../../../utils/newStandingsHelper";
 import { setLastUpdateDB } from "../../../utils/setLastUpdate";
 import updateLightPlayers from '../../../utils/updateLightPlayers';
+import { mapActions, mapGetters } from "vuex";
 
 export default {
   name: "SyncPoints",
@@ -188,17 +189,29 @@ export default {
         4: "Spain-LaLiga",
         17: "Turkey-Super-Lig",
       },
-      currentRound: undefined,
       selectedSyncRound: undefined,
-      players: undefined,
-      leagues: undefined,
-      users: undefined,
-      standings: undefined,
+      // currentRound: undefined,
+      // players: undefined,
+      // leagues: undefined,
+      // users: undefined,
+      // standings: undefined,
       error: false,
       errorMsg: "",
     };
   },
   methods: {
+    ...mapActions([
+      "fetchStandings",
+      "fetchCup",
+      "fetchCurrentRound",
+      "fetchH2h",
+      "fetchLeagues",
+      "fetchMatching",
+      "fetchPlayers",
+      "fetchCathegorizedPlayers",
+      "fetchTransfers",
+      "fetchUsers",
+    ]),
     test() {
       // const result = newStandingsHelper(this.players, this.users, this.leagues, this.currentRound)
       // const result1 = newStandingsHelper(this.players, this.users, this.leagues, this.currentRound - 1)
@@ -374,11 +387,11 @@ export default {
         .then((response) => response.json())
         .then(async () => {
           console.log("Success!");
-          this.$vs.loading.close();
           this.lastSync = await this.uploadNewSyncDate();
-
+          await this.fetchPlayers()
           updateLightPlayers()
 
+          this.$vs.loading.close();
           this.buttonEnablerFlags.sync = true;
         })
         .catch((err) => {
@@ -435,9 +448,9 @@ export default {
         body: JSON.stringify(payload),
       })
         .then((response) => response.json())
-        .then(async (data) => {
+        .then(async () => {
           console.log("Success!");
-          this.standings = data;
+          await this.fetchStandings()
         })
         .catch((err) => {
           console.error("Error:", err);
@@ -495,32 +508,34 @@ export default {
       return (this.selectedSyncRound = rnd);
     },
   },
-  computed: {},
+  computed: {
+    ...mapGetters(["currentRound", "players", "users", "leagues", 'standings']),
+  },
   watch: {
     points(nv) {
       if (nv) {
         this.$vs.loading.close();
       }
     },
-    players(nv) {
-      if (nv) {
-        this.$vs.loading.close();
-      }
-    },
+    // players(nv) {
+    //   if (nv) {
+    //     this.$vs.loading.close();
+    //   }
+    // },
   },
   async created() {
-    this.$vs.loading();
-    this.players = await getAllPlayersDataNormal();
-    this.leagues = await getAllLeagues();
-    this.users = await getAllUsers();
-    this.standings = await getStandings();
+    // this.$vs.loading();
+    // this.players = await getAllPlayersDataNormal();
+    // this.leagues = await getAllLeagues();
+    // this.users = await getAllUsers();
+    // this.standings = await getStandings();
+    // this.currentRound = await getCurrentRound();
+
     const uploadDate = await this.getLastUpdate();
     this.lastUpdate = uploadDate ? uploadDate : "No Upload Date!";
-
     const syncDate = await this.getLastSync();
     this.lastSync = syncDate ? syncDate : "No Sync Date!";
 
-    this.currentRound = await getCurrentRound();
   },
 };
 </script>

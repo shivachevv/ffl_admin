@@ -8,7 +8,7 @@
       title="Create new group!"
       :active.sync="showPopup1"
     >
-      <AddCupGroupForm :users="users" @updatedCupGroups="cupGroups = $event" />
+      <AddCupGroupForm :users="users" />
     </vs-popup>
     <vs-button
       class="add-league"
@@ -30,11 +30,11 @@
     >
 
     <!-- CUP GROUPS -->
-    <div class="rounds" v-if="cupGroups">
+    <div class="rounds" v-if="cup">
       <h2>CUP GROUPS</h2>
       <a
         href
-        v-for="group in Object.keys(cupGroups)"
+        v-for="group in Object.keys(cup)"
         :key="group"
         @click.prevent="selectGroupHandler(group)"
         :class="{
@@ -114,7 +114,6 @@
           v-if="popupGroup"
           :group="popupGroup"
           :users="users"
-          @updatedCupGroups="cupGroups = $event"
         />
       </vs-popup>
         <!-- <AddCupRoundForm
@@ -213,10 +212,9 @@ import AddCupGroupForm from "./AddCupGroupForm";
 import AddCupRoundForm from "./AddCupRoundForm";
 // import { getAllPlayersDataNormal } from "../../../utils/getAllPlayersData";
 import { DATA_URL } from "../../../common";
+import { mapActions, mapGetters } from "vuex";
 // import getAllLeagues from "../../../utils/getAllLeagues";
 // import { getCurrentRound } from "../../../utils/getCurrentRound";
-import getAllUsers from "../../../utils/getAllUsers";
-import getAllCupGroups from "../../../utils/getAllCupGroups";
 // import uploadAllPlayers from "../../../utils/uploadAllPlayers";
 // import { getAllPlayersDataNormal } from '../../../utils/getAllPlayersData';
 // import makeNewLeague from "../../../models/League";
@@ -231,8 +229,6 @@ export default {
   },
   data() {
     return {
-      cupGroups: undefined,
-      users: undefined,
       selectedRound: undefined,
       selectedUser: undefined,
       selectedGroup: undefined,
@@ -245,6 +241,10 @@ export default {
     };
   },
   methods: {
+    ...mapActions([
+      "fetchCup",
+      "fetchUsers",
+    ]),
     openAddCupGroupPopup() {
       return (this.showPopup1 = true);
     },
@@ -293,9 +293,9 @@ export default {
         .then((response) => response.json())
         .then(async (data) => {
           console.log("Success:", data);
-          this.success = true;
           this.$vs.loading();
-          this.cupGroups = await getAllCupGroups();
+          await this.fetchCup();
+          this.success = true;
         })
         .catch((error) => {
           console.error("Error:", error);
@@ -316,9 +316,9 @@ export default {
         .then((response) => response.json())
         .then(async (data) => {
           console.log("Success:", data);
-          this.success = true;
           this.$vs.loading();
-          this.cupGroups = await getAllCupGroups();
+          await this.fetchCup();
+          this.success = true;
         })
         .catch((error) => {
           console.error("Error:", error);
@@ -379,7 +379,7 @@ export default {
     selectGroupHandler(r) {
       this.selectedRound = undefined;
       this.selectedRoundNum = undefined;
-      this.selectedGroup = this.cupGroups[r];
+      this.selectedGroup = this.cup[r];
     },
     selectRoundHandler(r) {
       this.selectedRound = this.selectedGroup.rounds[r];
@@ -415,11 +415,11 @@ export default {
         .then((response) => response.json())
         .then(async (data) => {
           console.log("Success:", data);
-          this.success = true;
           this.$vs.loading();
           this.selectedRound = undefined;
           this.selectedRoundNum = undefined;
-          this.cupGroups = await getAllCupGroups();
+          await this.fetchCup();
+          this.success = true;
         })
         .catch((error) => {
           console.error("Error:", error);
@@ -784,26 +784,27 @@ export default {
     // }
   },
   computed: {
+    ...mapGetters(["cup","users"]),
     popupGroup() {
       if (this.selectedGroup) {
-        return this.cupGroups[this.selectedGroup.name];
+        return this.cup[this.selectedGroup.name];
       } else {
         return undefined;
       }
     },
   },
   watch: {
-    cupGroups(nv) {
-      if (nv && this.users) {
-        this.$vs.loading.close();
-        this.selectedGroup = this.cupGroups[this.selectedGroup.name];
-      }
-    },
-    users(nv) {
-      if (nv) {
-        this.$vs.loading.close();
-      }
-    },
+    // cup(nv) {
+    //   if (nv && this.users) {
+    //     this.$vs.loading.close();
+    //     // this.selectedGroup = this.cup[this.selectedGroup.name];
+    //   }
+    // },
+    // users(nv) {
+    //   if (nv && this.cup) {
+    //     this.$vs.loading.close();
+    //   }
+    // },
     selectedUser(nv) {
       if (nv && !this.selectedGroup.teams.includes(nv)) {
         this.selectedGroup.teams.push(nv);
@@ -818,9 +819,9 @@ export default {
     },
   },
   async created() {
-    this.$vs.loading();
-    this.cupGroups = await getAllCupGroups();
-    this.users = await getAllUsers();
+    // this.$vs.loading();
+    // await this.fetchUsers()
+    // await this.fetchCup()
   },
 };
 </script>
@@ -862,7 +863,7 @@ export default {
         padding: 5px 5px 5px 11px;
         transition: all 0.3s;
         position: relative;
-        width: 20%;
+        width: 50%;
 
         &::after {
           position: absolute;

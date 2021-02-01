@@ -1,86 +1,16 @@
 <template>
   <div class="players-points-container">
-    <h1 class="section-header">Edit Players Points Section</h1>
-
-    <!-- LEAGUES -->
-    <div class="leagues-container" v-if="players">
-      <a
-        v-for="l in Object.keys(players)"
-        :key="l"
-        @click.prevent="selectLeagueHandler(l)"
-        :class="{ selected: leagueSelected === l }"
-        class="points-player-menu-item"
-      >
-        <img
-          :src="
-            require(`@/assets/images/user-transfers/leagues/${makeLeagueToImg(
-              l
-            )}.png`)
-          "
-          :alt="l"
-        />
-      </a>
-    </div>
-    <!-- TEAMS -->
-    <div class="teams-container" v-if="players && leagueSelected">
-      <a
-        v-for="(t, i) in Object.keys(players[leagueSelected])"
-        :key="i"
-        @click.prevent="selectTeamHandler(t)"
-        class="points-player-menu-item"
-        :class="{ selected: teamSelected === t }"
-        >{{ t }}</a
-      >
-    </div>
-
-    <!-- PLAYERS -->
-    <div
-      class="players-container"
-      v-if="players && leagueSelected && teamSelected"
-    >
-      <div class="players-names">
-        <vs-alert
-          v-if="success"
-          title="Update finished!"
-          active="true"
-          color="success"
-          >Player succesfully updated!</vs-alert
-        >
-
-        <vs-alert :active.sync="error" closable close-icon="close">{{
-          errorMsg
-        }}</vs-alert>
-
-        <div class="edit-player-menu-header">
-          <span>Players</span>
-          <span v-for="i in currentRound" :key="i">{{ i }}</span>
-        </div>
-        <div
-          v-for="p in Object.values(players[leagueSelected][teamSelected])"
-          :key="p.id"
-          class="edit-player-menu-item"
-        >
-          <a>{{ p.name }} - {{ p.position }}</a>
-          <a
-            v-for="(rnd, i) in sortedRounds(Object.entries(p.points))"
-            :key="i"
-            @click.prevent="selectPlayerRoundHandler(p, rnd[1], i + 1)"
-            >{{ rnd[1].roundPts }}</a
-          >
-        </div>
-
         <vs-popup
           v-if="playerSelected && roundSelected"
           class="holamundo"
           :title="
             'Edit stats of ' +
-              playerSelected.name +
-              ' for round ' +
-              roundSelected.round +
-              '!'
+            playerSelected.name +
+            ' for round ' +
+            roundSelected.round +
+            '!'
           "
           :active.sync="showPopup"
-          @close="closePopup"
         >
           <h2 class="popup-header">Points: {{ selectedPlayerPts }}</h2>
           <form @submit.prevent="submitPlayerRoundStatsHandler">
@@ -105,36 +35,102 @@
             >
           </form>
         </vs-popup>
+    <h1 class="section-header">Edit Players Points Section</h1>
+
+    <!-- LEAGUES -->
+    <div class="leagues-container" v-if="cathegorizedPlayers">
+      <a
+        v-for="l in Object.keys(cathegorizedPlayers)"
+        :key="l"
+        @click.prevent="selectLeagueHandler(l)"
+        :class="{ selected: leagueSelected === l }"
+        class="points-player-menu-item"
+      >
+        <img
+          :src="
+            require(`@/assets/images/user-transfers/leagues/${makeLeagueToImg(
+              l
+            )}.png`)
+          "
+          :alt="l"
+        />
+      </a>
+    </div>
+    <!-- TEAMS -->
+    <div class="teams-container" v-if="cathegorizedPlayers && leagueSelected">
+      <a
+        v-for="(t, i) in Object.keys(cathegorizedPlayers[leagueSelected])"
+        :key="i"
+        @click.prevent="selectTeamHandler(t)"
+        class="points-player-menu-item"
+        :class="{ selected: teamSelected === t }"
+        >{{ t }}</a
+      >
+    </div>
+
+    <!-- PLAYERS -->
+    <div
+      class="players-container"
+      v-if="cathegorizedPlayers && leagueSelected && teamSelected"
+    >
+      <div class="players-names">
+        <vs-alert
+          v-if="success"
+          title="Update finished!"
+          active="true"
+          color="success"
+          >Player succesfully updated!</vs-alert
+        >
+
+        <vs-alert :active.sync="error" closable close-icon="close">{{
+          errorMsg
+        }}</vs-alert>
+
+        <div class="edit-player-menu-header">
+          <span>Players</span>
+          <span v-for="i in currentRound" :key="i">{{ i }}</span>
+        </div>
+        <div
+          v-for="p in Object.values(cathegorizedPlayers[leagueSelected][teamSelected])"
+          :key="p.id"
+          class="edit-player-menu-item"
+        >
+          <a>{{ p.name }} - {{ p.position }}</a>
+          <a
+            v-for="(rnd, i) in sortedRounds(Object.entries(p.points))"
+            :key="i"
+            @click.prevent="selectPlayerRoundHandler(p, rnd[1], i + 1)"
+            >{{ rnd[1].roundPts }}</a
+          >
+        </div>
+
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import {
-  cathegorizePlayers,
-  getAllPlayersDataNormal
-} from "../../../utils/getAllPlayersData";
-import { getCurrentRound } from "../../../utils/getCurrentRound";
+// import {
+//   cathegorizePlayers,
+// } from "../../../utils/getAllPlayersData";
 import pointsCalculator from "../../../utils/pointsCalculator";
 import { DATA_URL } from "../../../common";
 // import getStandings from '../../../utils/getStandings';
-import getAllLeagues from "../../../utils/getAllLeagues";
 // import standingsHelper from "../../../utils/standingsHelper";
 import newStandingsHelper from "../../../utils/newStandingsHelper";
-import getAllUsers from "../../../utils/getAllUsers";
-import { setLastUpdateDB } from '../../../utils/setLastUpdate';
-import updateLightPlayers from '../../../utils/updateLightPlayers';
+import { setLastUpdateDB } from "../../../utils/setLastUpdate";
+import updateLightPlayers from "../../../utils/updateLightPlayers";
+import { mapActions, mapGetters } from "vuex";
 
 export default {
   name: "PlayersPoints",
   components: {},
   data() {
     return {
-      currentRound: undefined,
-      players: undefined,
-      standings: undefined,
-      leagues: undefined,
+      // currentRound: undefined,
+      // cathegorizedPlayers: undefined,
+      // standings: undefined,
+      // leagues: undefined,
       leagueSelected: "",
       teamSelected: "",
       playerSelected: "",
@@ -143,15 +139,18 @@ export default {
       playerSelectedStats: {},
       success: false,
       error: false,
-      errorMsg: ""
+      errorMsg: "",
     };
   },
   methods: {
+    ...mapActions([
+      // "fetchLeagues",
+      "fetchPlayers",
+      // "fetchCurrentRound",
+      // "fetchUsers",
+    ]),
     makeLeagueToImg(v) {
-      return v
-        .toLowerCase()
-        .split(" ")
-        .join("-");
+      return v.toLowerCase().split(" ").join("-");
     },
     selectLeagueHandler(l) {
       this.teamSelected = "";
@@ -163,7 +162,7 @@ export default {
     },
     mergeStats(_new, _old) {
       let result = {};
-      Object.keys(_old).forEach(stat => {
+      Object.keys(_old).forEach((stat) => {
         if (_new[stat]) {
           result[stat] = _new[stat];
         } else {
@@ -177,7 +176,7 @@ export default {
       this.playerSelected = p;
       this.roundSelected = {
         round: rndCount,
-        roundData: rnd
+        roundData: rnd,
       };
       return (this.showPopup = true);
     },
@@ -188,7 +187,7 @@ export default {
       );
       const payload = {
         roundPts: this.selectedPlayerPts,
-        roundStats: merged
+        roundStats: merged,
       };
 
       return fetch(
@@ -197,18 +196,20 @@ export default {
           method: "PATCH",
           mode: "cors",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
         }
       )
-        .then(response => response.json())
+        .then((response) => response.json())
         .then(async () => {
           this.$vs.loading();
-          const tmpPlayers = await getAllPlayersDataNormal();
-          this.players = cathegorizePlayers(tmpPlayers);
-          setLastUpdateDB()
-          updateLightPlayers()
+          await this.fetchPlayers();
+          // this.cathegorizedPlayers = cathegorizePlayers(this.players);
+
+          // HEREEEEEEEEEEEEEEEEEEEEEE
+          setLastUpdateDB();
+          updateLightPlayers();
 
           // const previousStandings = standingsHelper(
           //   undefined,
@@ -227,19 +228,19 @@ export default {
           // );
 
           const standings = await newStandingsHelper(
-            tmpPlayers,
+            this.players,
             this.users,
             this.leagues,
             this.currentRound,
             false
           );
-          await this.deleteStandings()
+          await this.deleteStandings();
           // this.fetchUpdatedStandingsObject(currentStandings, this.currentRound);
           this.fetchUpdatedStandingsObject1(standings);
           this.success = true;
           // this.$emit('close', false)
         })
-        .catch(error => {
+        .catch((error) => {
           console.error("Error:", error);
           this.error = true;
           this.errorMsg = error;
@@ -250,16 +251,16 @@ export default {
         method: "PATCH",
         mode: "cors",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       })
-        .then(response => response.json())
+        .then((response) => response.json())
         .then(async () => {
           console.log("Success!");
           // this.standings = data
         })
-        .catch(err => {
+        .catch((err) => {
           console.error("Error:", err);
           this.$vs.loading.close();
           this.error = true;
@@ -271,34 +272,33 @@ export default {
         method: "PATCH",
         mode: "cors",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       })
-        .then(response => response.json())
+        .then((response) => response.json())
         .then(async () => {
           console.log("Success!");
           // this.standings = data
         })
-        .catch(err => {
+        .catch((err) => {
           console.error("Error:", err);
           this.$vs.loading.close();
           this.error = true;
           this.errorMsg = err;
         });
     },
-    async deleteStandings(){
-     return await fetch(`${DATA_URL}newstandings.json`, {
+    async deleteStandings() {
+      return await fetch(`${DATA_URL}newstandings.json`, {
         method: "DELETE",
         mode: "cors",
         headers: {
-          "Content-Type": "application/json"
-        }
+          "Content-Type": "application/json",
+        },
       })
-        .then(response => response.json())
-        .then(() => {
-        })
-        .catch(error => {
+        .then((response) => response.json())
+        .then(() => {})
+        .catch((error) => {
           console.error("Error:", error);
           this.error = true;
           this.errorMsg = error;
@@ -312,12 +312,13 @@ export default {
       });
       return sorted;
     },
-    closePopup() {
-      console.log("close");
-      return (this.showPopup = false);
-    }
+    // closePopup() {
+    //   console.log("close");
+    //   return (this.showPopup = false);
+    // },
   },
   computed: {
+    ...mapGetters(["currentRound", "players", "users", "leagues", 'cathegorizedPlayers']),
     selectedPlayerPts() {
       if (this.playerSelected && this.roundSelected) {
         const merged = this.mergeStats(
@@ -329,19 +330,19 @@ export default {
       } else {
         return "";
       }
-    }
+    },
   },
   watch: {
-    players(nv) {
-      if (nv && this.currentRound) {
-        this.$vs.loading.close();
-      }
-    },
-    currentRound(nv) {
-      if (nv && this.players) {
-        this.$vs.loading.close();
-      }
-    },
+    // players(nv) {
+    //   if (nv && this.currentRound) {
+    //     this.$vs.loading.close();
+    //   }
+    // },
+    // currentRound(nv) {
+    //   if (nv && this.players) {
+    //     this.$vs.loading.close();
+    //   }
+    // },
     showPopup(nv) {
       if (!nv) {
         this.playerSelected = "";
@@ -355,17 +356,18 @@ export default {
           this.success = false;
         }, 2000);
       }
-    }
+    },
   },
   async created() {
-    this.$vs.loading();
-    const tmpPlayers = await getAllPlayersDataNormal();
-    this.players = cathegorizePlayers(tmpPlayers);
-    this.currentRound = await getCurrentRound();
-    // this.standings = await getStandings()
-    this.leagues = await getAllLeagues();
-    this.users = await getAllUsers();
-  }
+    // this.$vs.loading();
+
+    // await this.fetchPlayers();
+    // console.log('component state end');
+    // this.cathegorizedPlayers = cathegorizePlayers(this.players);
+    // await this.fetchCurrentRound();
+    // await this.fetchLeagues();
+    // await this.fetchUsers();
+  },
 };
 </script>
 

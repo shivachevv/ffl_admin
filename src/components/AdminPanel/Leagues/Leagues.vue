@@ -611,16 +611,16 @@ export default {
     ...mapGetters(["leagues", "users"])
   },
   watch: {
-    leagues(nv) {
-      if (nv && this.users) {
-        this.$vs.loading.close();
-      }
-    },
-    users(nv) {
-      if (nv && this.leagues) {
-        this.$vs.loading.close();
-      }
-    },
+    // leagues(nv) {
+    //   if (nv && this.users) {
+    //     this.$vs.loading.close();
+    //   }
+    // },
+    // users(nv) {
+    //   if (nv && this.leagues) {
+    //     this.$vs.loading.close();
+    //   }
+    // },
     selectedUser(nv) {
       if (nv && !this.leagueSelected.teams.includes(nv)) {
         this.leagueSelected.teams.push(nv);
@@ -640,9 +640,9 @@ export default {
     // }
   },
   async created() {
-    this.$vs.loading();
-    this.fetchLeagues();
-    this.fetchUsers();
+    // this.$vs.loading();
+    // this.fetchLeagues();
+    // this.fetchUsers();
     // this.currentRound = await getCurrentRound();
     // this.transfers = await getAllTransfers();
   }

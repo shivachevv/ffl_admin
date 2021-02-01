@@ -1,14 +1,16 @@
 import loadResource from "../../utils/resources/loadResource";
-
+import { cathegorizePlayers } from '../../utils/getAllPlayersData'
 
 const state = {
     players: undefined,
-    lightPlayers:undefined
+    lightPlayers: undefined,
+    cathegorizedPlayers: undefined
 };
 
 const getters = {
     players: state => state.players,
     lightPlayers: state => state.lightPlayers,
+    cathegorizedPlayers: state => state.cathegorizedPlayers,
 };
 
 const actions = {
@@ -16,7 +18,9 @@ const actions = {
         commit
     }) {
         const players = await loadResource('players')
+        const cathegorizedPlayers = cathegorizePlayers(players)
         commit('setPlayers', players)
+        commit('setCathegorizedPlayers', cathegorizedPlayers)
     },
     async fetchLightPlayers({
         commit
@@ -24,6 +28,13 @@ const actions = {
         const lightPlayers = await loadResource('lightPlayers')
         commit('setLightPlayers', lightPlayers)
     },
+    // async fetchCathegorizedPlayers({
+    //     commit
+    // }) {
+    //     const players = await loadResource('players')
+    //     const cathegorizedPlayers = cathegorizePlayers(players)
+    //     commit('setCathegorizedPlayers', cathegorizedPlayers)
+    // }
 };
 
 const mutations = {
@@ -32,6 +43,9 @@ const mutations = {
     },
     setLightPlayers: (state, p) => {
         state.lightPlayers = p
+    },
+    setCathegorizedPlayers: (state, p) => {
+        state.cathegorizedPlayers = p
     },
 };
 

@@ -21,7 +21,6 @@
         :round="selectedRoundNum"
         :match="selectedMatchNum"
         team="team1"
-        @updatedCupGroups="cupGroups = $event"
       />
     </vs-popup>
     <vs-popup
@@ -42,7 +41,6 @@
         :round="selectedRoundNum"
         :match="selectedMatchNum"
         team="team2"
-        @updatedCupGroups="cupGroups = $event"
       />
     </vs-popup>
 
@@ -56,11 +54,11 @@
     >
 
     <!-- CUP GROUPS -->
-    <div class="rounds" v-if="cupGroups">
+    <div class="rounds" v-if="cup">
       <h2>CUP GROUPS</h2>
       <a
         href
-        v-for="group in Object.keys(cupGroups)"
+        v-for="group in Object.keys(cup)"
         :key="group"
         @click.prevent="selectGroupHandler(group)"
         :class="{
@@ -226,9 +224,10 @@
 <script>
 import AddPlayerStatsForm from "./AddPlayerStatsForm";
 import { DATA_URL } from "../../../common";
-import getAllUsers from "../../../utils/getAllUsers";
-import getAllCupGroups from "../../../utils/getAllCupGroups";
-import { getAllPlayersDataNormal } from "../../../utils/getAllPlayersData";
+import { mapActions, mapGetters } from "vuex";
+// import getAllUsers from "../../../utils/getAllUsers";
+// import getAllCupGroups from "../../../utils/getAllCupGroups";
+// import { getAllPlayersDataNormal } from "../../../utils/getAllPlayersData";
 
 export default {
   name: "CupMatchPoints",
@@ -237,9 +236,9 @@ export default {
   },
   data() {
     return {
-      cupGroups: undefined,
-      users: undefined,
-      players: undefined,
+      // cupGroups: undefined,
+      // users: undefined,
+      // players: undefined,
       selectedRound: undefined,
       selectedUser: undefined,
       selectedGroup: undefined,
@@ -259,6 +258,11 @@ export default {
     };
   },
   methods: {
+    ...mapActions([
+      "fetchPlayers",
+      "fetchCup",
+      "fetchUsers",
+    ]),
     test() {
       let result = {};
       for (const id in this.players) {
@@ -341,9 +345,9 @@ export default {
         .then((response) => response.json())
         .then(async (data) => {
           console.log("Success:", data);
-          this.success = true;
           this.$vs.loading();
-          this.cupGroups = await getAllCupGroups();
+          await this.fetchCup();
+          this.success = true;
         })
         .catch((error) => {
           console.error("Error:", error);
@@ -373,7 +377,7 @@ export default {
       this.selectedRound = undefined;
       this.selectedRoundNum = undefined;
       this.deselectCupSquads();
-      this.selectedGroup = this.cupGroups[r];
+      this.selectedGroup = this.cup[r];
     },
     selectRoundHandler(r) {
       this.selectedMatch = undefined;
@@ -753,24 +757,26 @@ export default {
     //   return (this.roundTotal = total);
     // }
   },
-  computed: {},
+  computed: {
+    ...mapGetters(["players", "cup", "users"])
+  },
   watch: {
-    cupGroups(nv) {
-      if (nv && this.users && this.players) {
-        this.$vs.loading.close();
-        this.selectedGroup = this.cupGroups[this.selectedGroup.name];
-      }
-    },
-    players(nv) {
-      if (nv && this.users && this.cupGroups) {
-        this.$vs.loading.close();
-      }
-    },
-    users(nv) {
-      if (nv && this.players && this.cupGroups) {
-        this.$vs.loading.close();
-      }
-    },
+    // cup(nv) {
+    //   if (nv && this.users && this.players) {
+    //     this.$vs.loading.close();
+    //     // this.selectedGroup = this.cupGroups[this.selectedGroup.name];
+    //   }
+    // },
+    // players(nv) {
+    //   if (nv && this.users && this.cup) {
+    //     this.$vs.loading.close();
+    //   }
+    // },
+    // users(nv) {
+    //   if (nv && this.players && this.cup) {
+    //     this.$vs.loading.close();
+    //   }
+    // },
     selectedUser(nv) {
       if (nv && !this.selectedGroup.teams.includes(nv)) {
         this.selectedGroup.teams.push(nv);
@@ -785,10 +791,10 @@ export default {
     },
   },
   async created() {
-    this.$vs.loading();
-    this.cupGroups = await getAllCupGroups();
-    this.users = await getAllUsers();
-    this.players = await getAllPlayersDataNormal();
+    // this.$vs.loading();
+    // this.fetchCup();
+    // this.fetchUsers();
+    // this.fetchPlayers();
   },
 };
 </script>

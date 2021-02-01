@@ -12,6 +12,7 @@
 import Header from "./components/common/Header";
 import Navigation from "./components/common/Navigation.vue";
 import ViewComponent from "./components/common/ViewComponent.vue";
+import { mapActions } from "vuex";
 
 export default {
   name: "App",
@@ -23,10 +24,36 @@ export default {
   data() {
     return {};
   },
-  methods: {},
+  methods: {
+    ...mapActions([
+      "fetchCup",
+      "fetchCurrentRound",
+      "fetchH2h",
+      "fetchLeagues",
+      "fetchMatching",
+      "fetchPlayers",
+      "fetchCathegorizedPlayers",
+      "fetchStandings",
+      "fetchTransfers",
+      "fetchUsers",
+    ]),
+  },
   computed: {},
   watch: {},
-  async created() {},
+  async created() {
+    this.$vs.loading();
+    this.fetchCup();
+    this.fetchCurrentRound();
+    this.fetchH2h();
+    this.fetchLeagues();
+    this.fetchMatching();
+    this.fetchStandings();
+    this.fetchTransfers();
+    this.fetchUsers();
+    // this.fetchCathegorizedPlayers()
+    await this.fetchPlayers();
+    this.$vs.loading.close();
+  },
 };
 </script>
 

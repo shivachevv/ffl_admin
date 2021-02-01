@@ -214,16 +214,16 @@ export default {
     },
   },
   watch: {
-    matching(nv) {
-      if (nv && this.players) {
-        this.$vs.loading.close();
-      }
-    },
-    players(nv) {
-      if (nv && this.matching) {
-        this.$vs.loading.close();
-      }
-    },
+    // matching(nv) {
+    //   if (nv && this.players) {
+    //     // this.$vs.loading.close();
+    //   }
+    // },
+    // players(nv) {
+    //   if (nv && this.matching) {
+    //     // this.$vs.loading.close();
+    //   }
+    // },
     success(nv) {
       if (nv === true) {
         setTimeout(() => {
@@ -233,9 +233,9 @@ export default {
     },
   },
   async created() {
-    this.$vs.loading();
-    this.fetchPlayers();
-    this.fetchMatching();
+    // this.$vs.loading();
+    // this.fetchPlayers();
+    // this.fetchMatching();
   },
   beforeDestroy() {
   },

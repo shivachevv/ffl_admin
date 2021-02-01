@@ -25,15 +25,15 @@
     >
 
     <!-- CUP GROUPS -->
-    <div class="rounds" v-if="cupGroups">
+    <div class="rounds" v-if="cup">
       <h2>CUP GROUPS</h2>
       <a
         href
-        v-for="group in Object.keys(cupGroups)"
+        v-for="group in Object.keys(cup)"
         :key="group"
         @click.prevent="selectGroupHandler(group)"
         :class="{
-          selected: selectedGroup ? group === selectedGroup.name : false
+          selected: selectedGroup ? group === selectedGroup.name : false,
         }"
         >{{ group }}</a
       >
@@ -103,7 +103,7 @@
               selected: selectedMatch
                 ? selectedMatch.team1.id === match.team1.id &&
                   selectedMatch.team2.id === match.team2.id
-                : false
+                : false,
             }"
             >{{ users[match.team1.id].userTeam }} -
             {{ users[match.team2.id].userTeam }}</a
@@ -120,7 +120,7 @@
             :key="player[0]"
             @click.prevent="addPlayerToCupSquadHandler(player, 'home')"
             :class="{
-              selected: isPlayerInSquad(players[player[1]].id, cupSquadHome)
+              selected: isPlayerInSquad(players[player[1]].id, cupSquadHome),
             }"
             >{{ player[0] }}: {{ players[player[1]].name }}</a
           >
@@ -142,7 +142,7 @@
             :key="player[0]"
             @click.prevent="addPlayerToCupSquadHandler(player, 'away')"
             :class="{
-              selected: isPlayerInSquad(players[player[1]].id, cupSquadAway)
+              selected: isPlayerInSquad(players[player[1]].id, cupSquadAway),
             }"
             >{{ player[0] }}: {{ players[player[1]].name }}
           </a>
@@ -232,11 +232,9 @@
 // import AddCupRoundForm from "./AddCupRoundForm";
 // import { getAllPlayersDataNormal } from "../../../utils/getAllPlayersData";
 import { DATA_URL } from "../../../common";
+import { mapActions, mapGetters } from "vuex";
 // import getAllLeagues from "../../../utils/getAllLeagues";
 // import { getCurrentRound } from "../../../utils/getCurrentRound";
-import getAllUsers from "../../../utils/getAllUsers";
-import getAllCupGroups from "../../../utils/getAllCupGroups";
-import { getAllPlayersDataNormal } from "../../../utils/getAllPlayersData";
 // import uploadAllPlayers from "../../../utils/uploadAllPlayers";
 // import { getAllPlayersDataNormal } from '../../../utils/getAllPlayersData';
 // import makeNewLeague from "../../../models/League";
@@ -245,15 +243,9 @@ import { getAllPlayersDataNormal } from "../../../utils/getAllPlayersData";
 
 export default {
   name: "CupSquadSelect",
-  components: {
-    // AddCupGroupForm,
-    // AddCupRoundForm
-  },
+  components: {},
   data() {
     return {
-      cupGroups: undefined,
-      users: undefined,
-      players: undefined,
       selectedRound: undefined,
       selectedUser: undefined,
       selectedGroup: undefined,
@@ -266,14 +258,15 @@ export default {
       selectedMatchNum: undefined,
       selectedMatch: undefined,
       cupSquadHome: {},
-      cupSquadAway: {}
+      cupSquadAway: {},
     };
   },
   methods: {
+    ...mapActions(["fetchCup", "fetchPlayers", "fetchUsers"]),
     isPlayerInSquad(player, squad) {
       if (this.cupSquadHome && this.cupSquadAway) {
         let result = Object.values(squad)
-          .map(x => {
+          .map((x) => {
             return x.id;
           })
           .includes(player);
@@ -288,7 +281,7 @@ export default {
           text: this.showSuccessMsgSquad(team, teamNumber),
           accept: () => {
             this.fetchUpdatedSquad(team, teamNumber);
-          }
+          },
         });
       } else {
         this.error = true;
@@ -319,12 +312,12 @@ export default {
         sub: 0,
         teamVictory: 0,
         threeAllowed: 0,
-        yellowCards: 0
+        yellowCards: 0,
       };
       const playerObject = {
         id,
         pts: 0,
-        stats
+        stats,
       };
       if (teamNumber === "home") {
         this.$set(this.cupSquadHome, pos, playerObject);
@@ -333,7 +326,7 @@ export default {
       }
     },
     selectMatchHandler(match, i) {
-      this.deselectCupSquads()
+      this.deselectCupSquads();
       this.selectedMatch = match;
       this.selectedMatchNum = i + 1;
       if (match.team1.squad) {
@@ -357,7 +350,7 @@ export default {
           text: this.showSuccessMsg(this.selectedGroup),
           accept: () => {
             this.fetchUpdatedLeague(this.selectedGroup);
-          }
+          },
         });
       } else {
         this.error = true;
@@ -372,7 +365,7 @@ export default {
           text: this.showSuccessMsgRnd(this.selectedRound),
           accept: () => {
             this.fetchUpdatedRound(this.selectedRound, this.selectedRoundNum);
-          }
+          },
         });
       } else {
         this.error = true;
@@ -384,18 +377,18 @@ export default {
         method: "PATCH",
         mode: "cors",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       })
-        .then(response => response.json())
-        .then(async data => {
+        .then((response) => response.json())
+        .then(async (data) => {
           console.log("Success:", data);
-          this.success = true;
           this.$vs.loading();
-          this.cupGroups = await getAllCupGroups();
+          await this.fetchCup();
+          this.success = true;
         })
-        .catch(error => {
+        .catch((error) => {
           console.error("Error:", error);
           this.error = true;
           this.errorMsg = error;
@@ -407,18 +400,18 @@ export default {
         method: "PATCH",
         mode: "cors",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       })
-        .then(response => response.json())
-        .then(async data => {
+        .then((response) => response.json())
+        .then(async (data) => {
           console.log("Success:", data);
-          this.success = true;
           this.$vs.loading();
-          this.cupGroups = await getAllCupGroups();
+          await this.fetchCup();
+          this.success = true;
         })
-        .catch(error => {
+        .catch((error) => {
           console.error("Error:", error);
           this.error = true;
           this.errorMsg = error;
@@ -435,19 +428,19 @@ export default {
           method: "PATCH",
           mode: "cors",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
         }
       )
-        .then(response => response.json())
-        .then(async data => {
+        .then((response) => response.json())
+        .then(async (data) => {
           console.log("Success:", data);
-          this.success = true;
           this.$vs.loading();
-          this.cupGroups = await getAllCupGroups();
+          await this.fetchCup();
+          this.success = true;
         })
-        .catch(error => {
+        .catch((error) => {
           console.error("Error:", error);
           this.error = true;
           this.errorMsg = error;
@@ -457,7 +450,7 @@ export default {
       return `You are about to edit group ${name}! 
       Users:
       ${Object.values(teams)
-        .map(team => {
+        .map((team) => {
           return `${this.users[team].userTeam}`;
         })
         .join(", ")}`;
@@ -480,7 +473,7 @@ export default {
       return `You are about to edit the squad for ${teamNumber} team! 
       Players:
       ${Object.entries(team)
-        .map(player => {
+        .map((player) => {
           const pos = player[0];
           const name = this.players[player[1].id].name;
           return `${pos}: ${name}`;
@@ -497,7 +490,7 @@ export default {
     isEditedCupRoundOK() {
       const { selectedRound } = this;
       let flag = true;
-      Object.keys(selectedRound).forEach(matchId => {
+      Object.keys(selectedRound).forEach((matchId) => {
         if (matchId !== "roundHeld") {
           const match = selectedRound[matchId];
           if (match.team1.id === "" || match.team2.id === "") {
@@ -514,9 +507,11 @@ export default {
       return false;
     },
     removeUserFromGroup(u) {
-      return (this.selectedGroup.teams = this.selectedGroup.teams.filter(x => {
-        return x !== u;
-      }));
+      return (this.selectedGroup.teams = this.selectedGroup.teams.filter(
+        (x) => {
+          return x !== u;
+        }
+      ));
     },
     selectGroupHandler(r) {
       this.selectedMatch = undefined;
@@ -524,7 +519,7 @@ export default {
       this.selectedRound = undefined;
       this.selectedRoundNum = undefined;
       this.deselectCupSquads();
-      this.selectedGroup = this.cupGroups[r];
+      this.selectedGroup = this.cup[r];
     },
     selectRoundHandler(r) {
       this.selectedMatch = undefined;
@@ -534,7 +529,7 @@ export default {
       this.selectedRoundNum = r;
     },
     roundMatchesArray(rnd) {
-      const result = Object.values(rnd).filter(x => {
+      const result = Object.values(rnd).filter((x) => {
         return typeof x !== "string";
       });
       return result;
@@ -552,7 +547,7 @@ export default {
       this.cupSquadHome = {};
       this.cupSquadAway = {};
       return;
-    }
+    },
     // createEditedUsers(leagueId, leagueTeams) {
     //   let copy = JSON.parse(JSON.stringify(this.users));
 
@@ -908,24 +903,26 @@ export default {
     //   return (this.roundTotal = total);
     // }
   },
-  computed: {},
+  computed: {
+    ...mapGetters(["players", "cup", "users"]),
+  },
   watch: {
-    cupGroups(nv) {
-      if (nv && this.users && this.players) {
-        this.$vs.loading.close();
-        this.selectedGroup = this.cupGroups[this.selectedGroup.name];
-      }
-    },
-    players(nv) {
-      if (nv && this.users && this.cupGroups) {
-        this.$vs.loading.close();
-      }
-    },
-    users(nv) {
-      if (nv && this.players && this.cupGroups) {
-        this.$vs.loading.close();
-      }
-    },
+    // cup(nv) {
+    //   if (nv && this.users && this.players) {
+    //     this.$vs.loading.close();
+    //     // this.selectedGroup = this.cupGroups[this.selectedGroup.name];
+    //   }
+    // },
+    // players(nv) {
+    //   if (nv && this.users && this.cup) {
+    //     this.$vs.loading.close();
+    //   }
+    // },
+    // users(nv) {
+    //   if (nv && this.players && this.cup) {
+    //     this.$vs.loading.close();
+    //   }
+    // },
     selectedUser(nv) {
       if (nv && !this.selectedGroup.teams.includes(nv)) {
         this.selectedGroup.teams.push(nv);
@@ -937,14 +934,14 @@ export default {
           this.success = false;
         }, 2000);
       }
-    }
+    },
   },
   async created() {
-    this.$vs.loading();
-    this.cupGroups = await getAllCupGroups();
-    this.users = await getAllUsers();
-    this.players = await getAllPlayersDataNormal();
-  }
+    // this.$vs.loading();
+    // this.fetchCup();
+    // this.fetchUsers();
+    // this.fetchPlayers();
+  },
 };
 </script>
 

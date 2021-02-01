@@ -91,11 +91,12 @@
 <script>
 // import { getAllPlayersDataNormal } from "../../../utils/getAllPlayersData";
 import { DATA_URL } from "../../../common";
-import getAllUsers from "../../../utils/getAllUsers";
-import { getCurrentRound } from "../../../utils/getCurrentRound";
-import getAllTransfers from "../../../utils/getAllTransfers";
+import { mapActions, mapGetters } from "vuex";
+// import getAllUsers from "../../../utils/getAllUsers";
+// import { getCurrentRound } from "../../../utils/getCurrentRound";
+// import getAllTransfers from "../../../utils/getAllTransfers";
 import makeNewTransfer from "../../../models/Transfer";
-import { getAllPlayersDataNormal } from "../../../utils/getAllPlayersData";
+// import { getAllPlayersDataNormal } from "../../../utils/getAllPlayersData";
 import { setLastUpdateDB } from '../../../utils/setLastUpdate';
 import updateLightPlayers from '../../../utils/updateLightPlayers';
 // import roundPointsCalculator from "../../../utils/roundPointsCalculator";
@@ -105,11 +106,11 @@ export default {
   components: {},
   data() {
     return {
-      users: undefined,
-      currentRound: undefined,
-      transfers: undefined,
+      // users: undefined,
+      // currentRound: undefined,
+      // transfers: undefined,
       selectedRoundTransfers: undefined,
-      players: undefined,
+      // players: undefined,
       //   selectedUser: undefined,
       selectedRound: undefined,
       //   selectedUserTeam: undefined,
@@ -123,6 +124,12 @@ export default {
     };
   },
   methods: {
+    ...mapActions([
+      "fetchPlayers",
+      "fetchCurrentRound",
+      "fetchUsers",
+      "fetchTransfers",
+    ]),
     fillTransfers() {
       const newTransfer = makeNewTransfer(
         4,
@@ -150,7 +157,7 @@ export default {
           console.log("Success:", data);
           //   this.success = true;
           this.$vs.loading();
-          this.transfers = await getAllTransfers();
+          await this.fetchTransfers();
         })
         .catch(error => {
           console.error("Error:", error);
@@ -182,10 +189,10 @@ export default {
           userLeague
         );
 
-        this.success = true;
         this.$vs.loading();
-        this.transfers = await getAllTransfers();
-        this.users = await getAllUsers();
+        await this.fetchTransfers();
+        await this.fetchUsers();
+        this.success = true;
         this.selectRoundHandler(this.selectedRound);
       } catch (error) {
         console.error(error);
@@ -207,11 +214,11 @@ export default {
           userLeague
         );
 
-        this.success = true;
         this.$vs.loading();
-        this.transfers = await getAllTransfers();
-        this.users = await getAllUsers();
+        await this.fetchTransfers();
+        await this.fetchUsers();
         this.selectRoundHandler(this.selectedRound);
+        this.success = true;
       } catch (error) {
         console.error(error);
         this.error = true;
@@ -509,6 +516,7 @@ export default {
     // }
   },
   computed: {
+    ...mapGetters(["players", "transfers", "users", "currentRound"]),
     sortedRoundTransfers() {
       if (this.selectedRoundTransfers) {
         const result = Object.entries(this.selectedRoundTransfers).sort((a, b) => {
@@ -522,22 +530,21 @@ export default {
     }
   },
   watch: {
-    players(nv) {
-      if (nv && this.users) {
-        this.$vs.loading.close();
-      }
-    },
-    users(nv) {
-      if (nv && this.players) {
-        this.$vs.loading.close();
-      }
-    },
-    transfers(nv) {
-      if (nv && this.users && this.players) {
-        console.log(nv);
-        this.$vs.loading.close();
-      }
-    },
+    // players(nv) {
+    //   if (nv && this.users) {
+    //     this.$vs.loading.close();
+    //   }
+    // },
+    // users(nv) {
+    //   if (nv && this.players) {
+    //     this.$vs.loading.close();
+    //   }
+    // },
+    // transfers(nv) {
+    //   if (nv && this.users && this.players) {
+    //     this.$vs.loading.close();
+    //   }
+    // },
     success(nv) {
       if (nv === true) {
         setTimeout(() => {
@@ -547,11 +554,11 @@ export default {
     }
   },
   async created() {
-    this.$vs.loading();
-    this.players = await getAllPlayersDataNormal();
-    this.users = await getAllUsers();
-    this.currentRound = await getCurrentRound();
-    this.transfers = await getAllTransfers();
+    // this.$vs.loading();
+    // this.fetchPlayers();
+    // this.fetchUsers();
+    // this.fetchTransfers();
+    // this.fetchCurrentRound();
   }
 };
 </script>

@@ -37,7 +37,7 @@
         >Users</a
       >
       <div class="admin-menu-item" v-if="showUsers">
-        <router-link class="menu-item-link" to="/user-personal">
+        <router-link class="menu-item-link" to="/users-personal">
           UsersPersonal
         </router-link>
         <router-link class="menu-item-link" to="/users-teams">

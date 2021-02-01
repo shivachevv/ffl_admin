@@ -14,9 +14,9 @@
       <label class="select">
         Users:
         <select v-if="users" v-model="userSelected" icon>
-          <option :key="u.uid" :value="u" v-for="u in Object.values(users)">{{
-            u.userTeam
-          }}</option>
+          <option :key="u.uid" :value="u" v-for="u in Object.values(users)">
+            {{ u.userTeam }}
+          </option>
         </select>
       </label>
       <!-- <label>
@@ -147,22 +147,22 @@
 <script>
 import { DATA_URL } from "../../../common";
 import { makeNewUser } from "../../../models/User";
-import getAllUsers from "../../../utils/getAllUsers";
+import { mapActions, mapGetters } from "vuex";
 
 export default {
   name: "UsersPersonal",
   components: {},
   data() {
     return {
-      users: undefined,
       userSelected: undefined,
       userEdited: {},
       success: false,
       error: false,
-      errorMsg: ""
+      errorMsg: "",
     };
   },
   methods: {
+    ...mapActions(["fetchUsers"]),
     // async test() {
     //   // const copy = JSON.parse(JSON.stringify(this.players));
     //   let counter = 0;
@@ -272,7 +272,7 @@ export default {
         ocupation,
         favTeam,
         motto,
-        code
+        code,
       } = merged;
       const newUser = makeNewUser(
         uid,
@@ -291,7 +291,7 @@ export default {
         color: "success",
         title: "Confirm Edit",
         text: this.showSuccessMsg(newUser),
-        accept: () => this.fetchEditedUser(newUser)
+        accept: () => this.fetchEditedUser(newUser),
       });
     },
     deleteUserHandler(uid) {
@@ -301,19 +301,19 @@ export default {
         text: "ARE YOU SURE YOU WANT TO DELETE THE USER FROM THE DATABASE ???",
         accept: () =>
           fetch(`${DATA_URL}users/${uid}.json`, {
-            method: "DELETE"
+            method: "DELETE",
           })
             .then(async () => {
               this.success = true;
               this.deselectUsers();
               this.$vs.loading();
-              this.users = await getAllUsers();
+              await this.fetchUsers();
             })
-            .catch(error => {
+            .catch((error) => {
               console.error("Error:", error);
               this.error = true;
               this.errorMsg = error;
-            })
+            }),
       });
     },
     showSuccessMsg(user) {
@@ -330,7 +330,7 @@ export default {
     },
     mergeUsers(_new, _old) {
       let result = {};
-      Object.keys(_old).forEach(atttr => {
+      Object.keys(_old).forEach((atttr) => {
         if (_new[atttr]) {
           result[atttr] = _new[atttr];
         } else {
@@ -345,19 +345,19 @@ export default {
         method: "PATCH",
         mode: "cors",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       })
-        .then(response => response.json())
-        .then(async data => {
+        .then((response) => response.json())
+        .then(async (data) => {
           console.log("Success:", data);
-          this.success = true;
           this.deselectUsers();
           this.$vs.loading();
-          this.users = await getAllUsers();
+          await this.fetchUsers();
+          this.success = true;
         })
-        .catch(error => {
+        .catch((error) => {
           console.error("Error:", error);
           this.error = true;
           this.errorMsg = error;
@@ -366,30 +366,31 @@ export default {
     deselectUsers() {
       this.userEdited = {};
       this.userSelected = "";
-    }
-  },
-  computed: {},
-  watch: {
-    users(nv) {
-      if (nv) {
-        this.$vs.loading.close();
-      }
     },
+  },
+  computed: {
+    ...mapGetters(["users"]),
+  },
+  watch: {
+    // users(nv) {
+    //   if (nv) {
+    //     this.$vs.loading.close();
+    //   }
+    // },
     success(nv) {
       if (nv === true) {
         setTimeout(() => {
           this.success = false;
         }, 2000);
       }
-    }
+    },
   },
   async created() {
-    this.$vs.loading();
-    this.users = await getAllUsers();
+    // this.$vs.loading();
+    // this.fetchUsers();
   },
-  destroyed(){
-    console.log('destroyed');
-  }
+  destroyed() {
+  },
 };
 </script>
 

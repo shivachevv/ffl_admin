@@ -243,15 +243,15 @@ export default {
         }, 2000);
       }
     },
-    users(nv) {
-      if (nv) {
-        this.$vs.loading.close();
-      }
-    },
+    // users(nv) {
+    //   if (nv) {
+    //     this.$vs.loading.close();
+    //   }
+    // },
   },
   async created() {
-    this.$vs.loading();
-    this.fetchUsers();
+    // this.$vs.loading();
+    // this.fetchUsers();
   },
 };
 </script>

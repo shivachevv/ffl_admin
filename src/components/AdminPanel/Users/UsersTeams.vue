@@ -165,10 +165,8 @@
 </template>
 
 <script>
-import { getAllPlayersDataNormal } from "../../../utils/getAllPlayersData";
 import { DATA_URL } from "../../../common";
-import getAllUsers from "../../../utils/getAllUsers";
-import { getCurrentRound } from "../../../utils/getCurrentRound";
+import { mapActions, mapGetters } from "vuex";
 import roundPointsCalculator from "../../../utils/roundPointsCalculator";
 
 export default {
@@ -176,8 +174,6 @@ export default {
   components: {},
   data() {
     return {
-      users: undefined,
-      players: undefined,
       selectedUser: undefined,
       selectedRound: undefined,
       selectedUserTeam: undefined,
@@ -191,6 +187,11 @@ export default {
     };
   },
   methods: {
+    ...mapActions([
+      "fetchPlayers",
+      "fetchCurrentRound",
+      "fetchUsers",
+    ]),
     // editUserTeamFormHandler() {
     //   return;
     // },
@@ -254,10 +255,10 @@ export default {
         .then(response => response.json())
         .then(async data => {
           console.log("Success:", data);
-          this.success = true;
           this.deselectUser();
           this.$vs.loading();
-          this.users = await getAllUsers();
+          await this.fetchUsers();
+          this.success = true;
         })
         .catch(error => {
           console.error("Error:", error);
@@ -349,6 +350,7 @@ export default {
     // }
   },
   computed: {
+    ...mapGetters(["players", "currentRound", "users"]),
     roundTotal() {
       return roundPointsCalculator(
         this.selectedUser.rounds[`r${this.selectedRound}`],
@@ -358,16 +360,16 @@ export default {
     }
   },
   watch: {
-    users(nv) {
-      if (nv && this.players) {
-        this.$vs.loading.close();
-      }
-    },
-    players(nv) {
-      if (nv && this.users) {
-        this.$vs.loading.close();
-      }
-    },
+    // users(nv) {
+    //   if (nv && this.players) {
+    //     this.$vs.loading.close();
+    //   }
+    // },
+    // players(nv) {
+    //   if (nv && this.users) {
+    //     this.$vs.loading.close();
+    //   }
+    // },
     success(nv) {
       if (nv === true) {
         setTimeout(() => {
@@ -377,13 +379,12 @@ export default {
     }
   },
   async created() {
-    this.$vs.loading();
-    this.players = await getAllPlayersDataNormal();
-    this.users = await getAllUsers();
-    this.currentRound = await getCurrentRound();
+    // this.$vs.loading();
+    // this.fetchPlayers()
+    // this.fetchUsers()
+    // this.fetchCurrentRound()
   },
   destroyed(){
-    console.log('destroyed');
   }
 };
 </script>
