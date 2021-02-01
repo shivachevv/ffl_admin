@@ -1,7 +1,6 @@
 <template>
   <div class="cup-section-container" v-if="users">
-    <h1 class="section-header">Cup Match Points</h1>
-
+    <SectionHeader title="Cup Match Points" />
     <!-- CREATE NEW CUP GROUP BUTTON and POPUP -->
     <vs-popup
       v-if="
@@ -225,6 +224,7 @@
 import AddPlayerStatsForm from "./AddPlayerStatsForm";
 import { DATA_URL } from "../../../common";
 import { mapActions, mapGetters } from "vuex";
+import SectionHeader from '../../common/SectionHeader'
 // import getAllUsers from "../../../utils/getAllUsers";
 // import getAllCupGroups from "../../../utils/getAllCupGroups";
 // import { getAllPlayersDataNormal } from "../../../utils/getAllPlayersData";
@@ -233,6 +233,7 @@ export default {
   name: "CupMatchPoints",
   components: {
     AddPlayerStatsForm,
+    SectionHeader
   },
   data() {
     return {
@@ -258,11 +259,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions([
-      "fetchPlayers",
-      "fetchCup",
-      "fetchUsers",
-    ]),
+    ...mapActions(["fetchPlayers", "fetchCup", "fetchUsers"]),
     test() {
       let result = {};
       for (const id in this.players) {
@@ -758,7 +755,7 @@ export default {
     // }
   },
   computed: {
-    ...mapGetters(["players", "cup", "users"])
+    ...mapGetters(["players", "cup", "users"]),
   },
   watch: {
     // cup(nv) {

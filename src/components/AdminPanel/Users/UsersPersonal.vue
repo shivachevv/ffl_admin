@@ -1,6 +1,6 @@
 <template>
   <div class="users-container">
-    <h1 class="section-header">Edit User Personal Details Section</h1>
+    <SectionHeader title="Edit User Personal Details Section" />
 
     <div class="user-selection">
       <!-- <vs-button
@@ -148,10 +148,13 @@
 import { DATA_URL } from "../../../common";
 import { makeNewUser } from "../../../models/User";
 import { mapActions, mapGetters } from "vuex";
+import SectionHeader from '../../common/SectionHeader'
 
 export default {
   name: "UsersPersonal",
-  components: {},
+  components: {
+    SectionHeader
+  },
   data() {
     return {
       userSelected: undefined,

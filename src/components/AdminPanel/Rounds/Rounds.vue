@@ -1,6 +1,7 @@
 <template>
   <div class="rounds-container" v-if="players">
-    <h1 class="section-header">Rounds section</h1>
+    <SectionHeader title="Rounds section" />
+
     <div class="rounds">
       <span>Current Round: {{ currentRound }}</span>
       <div class="round-buttons">
@@ -50,11 +51,14 @@ import pointsCalculator from "../../../utils/pointsCalculator";
 import { setLastUpdateDB } from "../../../utils/setLastUpdate";
 import updateLightPlayers from "../../../utils/updateLightPlayers";
 import updateStats from "../../../utils/updateStats";
+import SectionHeader from '../../common/SectionHeader'
 // import getAllH2HRounds from "../../../utils/getAllH2HRounds";
 
 export default {
   name: "Rounds",
-  components: {},
+  components: {
+    SectionHeader
+  },
   data() {
     return {
       h2hrounds: undefined,

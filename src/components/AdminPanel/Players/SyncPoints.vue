@@ -3,6 +3,9 @@
     <h1 class="section-header">
       Sync Player Points Section. Current round is: {{ currentRound }}
     </h1>
+    <SectionHeader
+      :title="`Sync Player Points Section. Current round is: ${currentRound}`"
+    />
 
     <vs-alert :active.sync="error" closable close-icon="close" color="danger">{{
       errorMsg
@@ -150,12 +153,15 @@ import { DATA_URL, roundDates } from "../../../common";
 // import standingsHelper from "../../../utils/standingsHelper";
 import newStandingsHelper from "../../../utils/newStandingsHelper";
 import { setLastUpdateDB } from "../../../utils/setLastUpdate";
-import updateLightPlayers from '../../../utils/updateLightPlayers';
+import updateLightPlayers from "../../../utils/updateLightPlayers";
 import { mapActions, mapGetters } from "vuex";
+import SectionHeader from "../../common/SectionHeader";
 
 export default {
   name: "SyncPoints",
-  components: {},
+  components: {
+    SectionHeader,
+  },
   data() {
     return {
       roundDates: roundDates,
@@ -346,7 +352,7 @@ export default {
         this.fetchUpdatedPlayersObject(updatedPlayers);
 
         // UPDATE LAST_UPDATE_DATE FOR THE CACHE
-        setLastUpdateDB()
+        setLastUpdateDB();
 
         await this.deleteStandings();
         this.fetchUpdatedStandingsObject1(standings);
@@ -366,9 +372,8 @@ export default {
         this.fetchUpdatedStandingsObject1(standings);
 
         // UPDATE LAST_UPDATE_DATE FOR THE CACHE
-        setLastUpdateDB()
+        setLastUpdateDB();
 
-        
         // this.fetchUpdatedStandingsObject(
         //   this.standings[`r${this.selectedSyncRound - 1}`]
         // );
@@ -388,8 +393,8 @@ export default {
         .then(async () => {
           console.log("Success!");
           this.lastSync = await this.uploadNewSyncDate();
-          await this.fetchPlayers()
-          updateLightPlayers()
+          await this.fetchPlayers();
+          updateLightPlayers();
 
           this.$vs.loading.close();
           this.buttonEnablerFlags.sync = true;
@@ -450,7 +455,7 @@ export default {
         .then((response) => response.json())
         .then(async () => {
           console.log("Success!");
-          await this.fetchStandings()
+          await this.fetchStandings();
         })
         .catch((err) => {
           console.error("Error:", err);
@@ -509,7 +514,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(["currentRound", "players", "users", "leagues", 'standings']),
+    ...mapGetters(["currentRound", "players", "users", "leagues", "standings"]),
   },
   watch: {
     points(nv) {
@@ -535,7 +540,6 @@ export default {
     this.lastUpdate = uploadDate ? uploadDate : "No Upload Date!";
     const syncDate = await this.getLastSync();
     this.lastSync = syncDate ? syncDate : "No Sync Date!";
-
   },
 };
 </script>

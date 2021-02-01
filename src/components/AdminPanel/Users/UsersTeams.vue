@@ -1,14 +1,14 @@
 <template>
   <div class="users-container">
-    <h1 class="section-header">Edit User Teams Section</h1>
+    <SectionHeader title="Edit User Teams Section" />
 
     <div class="user-selection">
       <label class="select">
         Users:
         <select v-if="users" v-model="selectedUser" icon>
-          <option :key="u.uid" :value="u" v-for="u in Object.values(users)">{{
-            u.userTeam
-          }}</option>
+          <option :key="u.uid" :value="u" v-for="u in Object.values(users)">
+            {{ u.userTeam }}
+          </option>
         </select>
       </label>
       <!-- <label>
@@ -81,9 +81,7 @@
                   v-for="player in selectedUserTeam"
                   :key="player"
                   :value="player"
-                  :text="
-                    `${players[player].name} - ${players[player].position}`
-                  "
+                  :text="`${players[player].name} - ${players[player].position}`"
                 />
               </vs-select>
             </label>
@@ -94,9 +92,7 @@
                   v-for="player in selectedUserTeam"
                   :key="player"
                   :value="player"
-                  :text="
-                    `${players[player].name} - ${players[player].position}`
-                  "
+                  :text="`${players[player].name} - ${players[player].position}`"
                 />
               </vs-select>
             </label>
@@ -168,10 +164,13 @@
 import { DATA_URL } from "../../../common";
 import { mapActions, mapGetters } from "vuex";
 import roundPointsCalculator from "../../../utils/roundPointsCalculator";
+import SectionHeader from "../../common/SectionHeader";
 
 export default {
   name: "UsersTeams",
-  components: {},
+  components: {
+    SectionHeader,
+  },
   data() {
     return {
       selectedUser: undefined,
@@ -182,16 +181,12 @@ export default {
       error: false,
       errorMsg: "",
       newCpt: "",
-      newViceCpt: ""
+      newViceCpt: "",
       // roundTotal: 0
     };
   },
   methods: {
-    ...mapActions([
-      "fetchPlayers",
-      "fetchCurrentRound",
-      "fetchUsers",
-    ]),
+    ...mapActions(["fetchPlayers", "fetchCurrentRound", "fetchUsers"]),
     // editUserTeamFormHandler() {
     //   return;
     // },
@@ -224,14 +219,14 @@ export default {
         return this.$vs.dialog({
           color: "danger",
           title: "Please change Captain and ViceCaptain!",
-          text: "Captain and ViceCaptain should not be the same!"
+          text: "Captain and ViceCaptain should not be the same!",
         });
       } else {
         return this.$vs.dialog({
           color: "success",
           title: "Confirm Edit",
           text: this.showSuccessMsg(updatedCpt, updatedVCpt),
-          accept: () => this.fetchEditedCaptains(updatedCpt, updatedVCpt)
+          accept: () => this.fetchEditedCaptains(updatedCpt, updatedVCpt),
         });
       }
     },
@@ -239,7 +234,7 @@ export default {
       const { uid } = this.selectedUser;
       const payload = {
         cpt: newC,
-        viceCpt: newVC
+        viceCpt: newVC,
       };
       return fetch(
         `${DATA_URL}users/${uid}/rounds/r${this.selectedRound}.json`,
@@ -247,20 +242,20 @@ export default {
           method: "PATCH",
           mode: "cors",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
         }
       )
-        .then(response => response.json())
-        .then(async data => {
+        .then((response) => response.json())
+        .then(async (data) => {
           console.log("Success:", data);
           this.deselectUser();
           this.$vs.loading();
           await this.fetchUsers();
           this.success = true;
         })
-        .catch(error => {
+        .catch((error) => {
           console.error("Error:", error);
           this.error = true;
           this.errorMsg = error;
@@ -338,7 +333,7 @@ export default {
     // },
     deselectUser() {
       this.selectedUser = "";
-    }
+    },
     // calcRoundTotalPts() {
     //   this.roundTotal = "...";
     //   const total = roundPointsCalculator(
@@ -357,7 +352,7 @@ export default {
         this.selectedRound,
         this.players
       );
-    }
+    },
   },
   watch: {
     // users(nv) {
@@ -376,7 +371,7 @@ export default {
           this.success = false;
         }, 2000);
       }
-    }
+    },
   },
   async created() {
     // this.$vs.loading();
@@ -384,8 +379,7 @@ export default {
     // this.fetchUsers()
     // this.fetchCurrentRound()
   },
-  destroyed(){
-  }
+  destroyed() {},
 };
 </script>
 

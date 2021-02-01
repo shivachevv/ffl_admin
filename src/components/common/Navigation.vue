@@ -212,16 +212,4 @@ export default {
     }
   }
 }
-
-.admin-details {
-  width: 85%;
-
-  .section-header {
-    margin: 20px 0 0 0;
-    font-size: 1.3rem;
-    text-decoration: underline;
-    width: 100%;
-    text-align: center;
-  }
-}
 </style>

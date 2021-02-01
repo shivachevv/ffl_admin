@@ -1,6 +1,6 @@
 <template>
   <div class="leagues-section-container">
-    <h1 class="section-header">Leagues Section</h1>
+    <SectionHeader title="Leagues Section" />
 
     <!-- CREATE NEW PLAYER BUTTON and POPUP -->
     <vs-popup
@@ -105,6 +105,7 @@ import AddLeagueForm from "./AddLeagueForm";
 // import { getAllPlayersDataNormal } from "../../../utils/getAllPlayersData";
 import { DATA_URL } from "../../../common";
 import { mapActions, mapGetters } from "vuex";
+import SectionHeader from '../../common/SectionHeader'
 // import getAllLeagues from "../../../utils/getAllLeagues";
 // import { getCurrentRound } from "../../../utils/getCurrentRound";
 // import getAllUsers from "../../../utils/getAllUsers";
@@ -116,7 +117,8 @@ import makeNewLeague from "../../../models/League";
 export default {
   name: "Leagues",
   components: {
-    AddLeagueForm
+    AddLeagueForm,
+    SectionHeader
   },
   data() {
     return {

@@ -1,6 +1,6 @@
 <template>
   <div class="leagues-section-container" v-if="users">
-    <h1 class="section-header">Head to Head League Section</h1>
+    <SectionHeader title="H2H League Section" />
 
     <!-- CREATE NEW PLAYER BUTTON and POPUP -->
     <vs-popup
@@ -139,6 +139,7 @@ import { DATA_URL } from "../../../common";
 // import getAllLeagues from "../../../utils/getAllLeagues";
 // import { getCurrentRound } from "../../../utils/getCurrentRound";
 import uploadAllPlayers from "../../../utils/uploadAllPlayers";
+import SectionHeader from '../../common/SectionHeader'
 // import { getAllPlayersDataNormal } from '../../../utils/getAllPlayersData';
 // import makeNewLeague from "../../../models/League";
 // import makeNewTransfer from "../../../models/Transfer";
@@ -150,6 +151,7 @@ export default {
   name: "H2HLeagues",
   components: {
     AddH2HRoundForm,
+    SectionHeader
   },
   data() {
     return {

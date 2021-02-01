@@ -1,6 +1,7 @@
 <template>
   <div class="transfers-section-container">
-    <h1 class="section-header">Transfers Section</h1>
+    <SectionHeader title="Transfers Section" />
+
     <div class="rounds">
       <a
         href
@@ -21,18 +22,18 @@
     <vs-alert :active.sync="error" closable close-icon="close">{{
       errorMsg
     }}</vs-alert>
-    
+
     <div v-if="selectedRoundTransfers" class="transfers-container">
       <div
         v-for="userTransfers in sortedRoundTransfers"
         :key="userTransfers[0]"
         class="user-transfers"
       >
-        <div class="user-trans-heading">{{ users[userTransfers[0]].userTeam }}</div>
+        <div class="user-trans-heading">
+          {{ users[userTransfers[0]].userTeam }}
+        </div>
         <div
-          v-for="(transfer, i) in sortUserTransfers(
-            userTransfers[1]
-          )"
+          v-for="(transfer, i) in sortUserTransfers(userTransfers[1])"
           :key="i"
           class="user-transfer"
         >
@@ -41,17 +42,10 @@
           <span class="out">{{ players[transfer[1].transferOut].name }}</span>
           <span class="status">{{ transfer[1].status }}</span>
           <span class="time" v-if="transfer[1].timeMade.includes(`T`)">
-            {{
-              transfer[1].timeMade
-                .split("T")
-                .join(" ")
-                .split(".")
-                .shift()
-            }}
+            {{ transfer[1].timeMade.split("T").join(" ").split(".").shift() }}
           </span>
           <span class="time" v-else>
-            {{
-              transfer[1].timeMade}}
+            {{ transfer[1].timeMade }}
           </span>
           <vs-button
             v-if="transfer[1].status === 'pending'"
@@ -97,13 +91,16 @@ import { mapActions, mapGetters } from "vuex";
 // import getAllTransfers from "../../../utils/getAllTransfers";
 import makeNewTransfer from "../../../models/Transfer";
 // import { getAllPlayersDataNormal } from "../../../utils/getAllPlayersData";
-import { setLastUpdateDB } from '../../../utils/setLastUpdate';
-import updateLightPlayers from '../../../utils/updateLightPlayers';
+import { setLastUpdateDB } from "../../../utils/setLastUpdate";
+import updateLightPlayers from "../../../utils/updateLightPlayers";
+import SectionHeader from "../../common/SectionHeader";
 // import roundPointsCalculator from "../../../utils/roundPointsCalculator";
 
 export default {
   name: "Transfers",
-  components: {},
+  components: {
+    SectionHeader,
+  },
   data() {
     return {
       // users: undefined,
@@ -117,7 +114,7 @@ export default {
       //   userEdited: {},
       success: false,
       error: false,
-      errorMsg: ""
+      errorMsg: "",
       //   newCpt: "",
       //   newViceCpt: "",
       //   roundTotal: 0
@@ -147,19 +144,19 @@ export default {
           method: "PATCH",
           mode: "cors",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
         }
       )
-        .then(response => response.json())
-        .then(async data => {
+        .then((response) => response.json())
+        .then(async (data) => {
           console.log("Success:", data);
           //   this.success = true;
           this.$vs.loading();
           await this.fetchTransfers();
         })
-        .catch(error => {
+        .catch((error) => {
           console.error("Error:", error);
           //   this.error = true;
           //   this.errorMsg = error;
@@ -227,7 +224,7 @@ export default {
     },
     uploadUserTransfersCount(count, tr) {
       const payload = {
-        transfersMade: count
+        transfersMade: count,
       };
       return fetch(
         `${DATA_URL}users/${tr[1].team}/rounds/r${this.selectedRound}.json`,
@@ -235,20 +232,20 @@ export default {
           method: "PATCH",
           mode: "cors",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
         }
       )
-        .then(response => response.json())
-        .then(async data => {
+        .then((response) => response.json())
+        .then(async (data) => {
           console.log("Success:", data);
           // this.success = true;
           // this.deselectUser();
           // this.$vs.loading();
           // this.users = await getAllUsers();
         })
-        .catch(error => {
+        .catch((error) => {
           console.error("Error:", error);
           // this.error = true;
           // this.errorMsg = error;
@@ -256,7 +253,7 @@ export default {
     },
     async uploadUserUpdatedTeam(team, tr) {
       const payload = {
-        team
+        team,
       };
       return await fetch(
         `${DATA_URL}users/${tr[1].team}/rounds/r${this.selectedRound}/nextRndInfo.json`,
@@ -264,20 +261,20 @@ export default {
           method: "PATCH",
           mode: "cors",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
         }
       )
-        .then(response => response.json())
-        .then(async data => {
+        .then((response) => response.json())
+        .then(async (data) => {
           console.log("SuccessTeam:", data);
           // this.success = true;
           // this.deselectUser();
           // this.$vs.loading();
           // this.users = await getAllUsers();
         })
-        .catch(error => {
+        .catch((error) => {
           console.error("Error:", error);
           // this.error = true;
           // this.errorMsg = error;
@@ -304,7 +301,7 @@ export default {
       const _out = transfer.transferOut;
 
       let result = {};
-      Object.keys(editTeam).forEach(pos => {
+      Object.keys(editTeam).forEach((pos) => {
         if (editTeam[pos] === _out) {
           result[pos] = _in;
         } else {
@@ -322,20 +319,20 @@ export default {
           method: "PATCH",
           mode: "cors",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
         }
       )
-        .then(response => response.json())
-        .then(async data => {
+        .then((response) => response.json())
+        .then(async (data) => {
           console.log("Success:", data);
           // this.success = true;
           // this.$vs.loading();
           // this.transfers = await getAllTransfers();
           // this.selectRoundHandler(this.selectedRound);
         })
-        .catch(error => {
+        .catch((error) => {
           console.error("Error:", error);
           // this.error = true;
           // this.errorMsg = error;
@@ -345,10 +342,10 @@ export default {
       const statusIn = action === "confirmed" ? false : true;
       const statusOut = action === "confirmed" ? true : false;
       const payloadIn = {
-        [userLeague]: statusIn
+        [userLeague]: statusIn,
       };
       const payloadOut = {
-        [userLeague]: statusOut
+        [userLeague]: statusOut,
       };
       this.fetchNewPlayerAvailableStatus(idIn, payloadIn);
       this.fetchNewPlayerAvailableStatus(idOut, payloadOut);
@@ -359,27 +356,27 @@ export default {
         method: "PATCH",
         mode: "cors",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       })
-        .then(response => response.json())
-        .then(async data => {
+        .then((response) => response.json())
+        .then(async (data) => {
           console.log("Success:", data);
-          setLastUpdateDB()
-          updateLightPlayers()
+          setLastUpdateDB();
+          updateLightPlayers();
         })
-        .catch(error => {
+        .catch((error) => {
           console.error("Error:", error);
           this.error = true;
           this.errorMsg = error;
         });
     },
-    sortUserTransfers(transfers){
-      return Object.entries(transfers).sort((a,b)=>{
+    sortUserTransfers(transfers) {
+      return Object.entries(transfers).sort((a, b) => {
         return new Date(b[1].timeMade) - new Date(a[1].timeMade);
-      })
-    }
+      });
+    },
     // changeCaptainsHandler() {
     //   const oldCpt = this.selectedUser.rounds[`r${this.selectedRound}`].cpt;
     //   const oldViceCpt = this.selectedUser.rounds[`r${this.selectedRound}`]
@@ -519,15 +516,17 @@ export default {
     ...mapGetters(["players", "transfers", "users", "currentRound"]),
     sortedRoundTransfers() {
       if (this.selectedRoundTransfers) {
-        const result = Object.entries(this.selectedRoundTransfers).sort((a, b) => {
-          const user1 = this.users[a[0]];
-          const user2 = this.users[b[0]]
-          return user1.league.localeCompare(user2.league)
-        });
+        const result = Object.entries(this.selectedRoundTransfers).sort(
+          (a, b) => {
+            const user1 = this.users[a[0]];
+            const user2 = this.users[b[0]];
+            return user1.league.localeCompare(user2.league);
+          }
+        );
         console.log(result);
-        return result
-      } else return ''
-    }
+        return result;
+      } else return "";
+    },
   },
   watch: {
     // players(nv) {
@@ -551,7 +550,7 @@ export default {
           this.success = false;
         }, 2000);
       }
-    }
+    },
   },
   async created() {
     // this.$vs.loading();
@@ -559,7 +558,7 @@ export default {
     // this.fetchUsers();
     // this.fetchTransfers();
     // this.fetchCurrentRound();
-  }
+  },
 };
 </script>
 

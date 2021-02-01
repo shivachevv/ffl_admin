@@ -1,6 +1,6 @@
 <template>
   <div class="cup-section-container" v-if="users">
-    <h1 class="section-header">Cup Squad Selection</h1>
+    <SectionHeader title="Cup Squad Selection" />
 
     <!-- CREATE NEW CUP GROUP BUTTON and POPUP -->
     <!-- <vs-popup class="holamundo" title="Create new group!" :active.sync="showPopup1">
@@ -233,6 +233,7 @@
 // import { getAllPlayersDataNormal } from "../../../utils/getAllPlayersData";
 import { DATA_URL } from "../../../common";
 import { mapActions, mapGetters } from "vuex";
+import SectionHeader from '../../common/SectionHeader'
 // import getAllLeagues from "../../../utils/getAllLeagues";
 // import { getCurrentRound } from "../../../utils/getCurrentRound";
 // import uploadAllPlayers from "../../../utils/uploadAllPlayers";
@@ -243,7 +244,9 @@ import { mapActions, mapGetters } from "vuex";
 
 export default {
   name: "CupSquadSelect",
-  components: {},
+  components: {
+    SectionHeader
+  },
   data() {
     return {
       selectedRound: undefined,

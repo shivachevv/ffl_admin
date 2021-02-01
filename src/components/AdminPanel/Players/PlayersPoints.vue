@@ -35,7 +35,7 @@
             >
           </form>
         </vs-popup>
-    <h1 class="section-header">Edit Players Points Section</h1>
+    <SectionHeader title="Edit Players Points Section" />
 
     <!-- LEAGUES -->
     <div class="leagues-container" v-if="cathegorizedPlayers">
@@ -121,10 +121,13 @@ import newStandingsHelper from "../../../utils/newStandingsHelper";
 import { setLastUpdateDB } from "../../../utils/setLastUpdate";
 import updateLightPlayers from "../../../utils/updateLightPlayers";
 import { mapActions, mapGetters } from "vuex";
+import SectionHeader from '../../common/SectionHeader'
 
 export default {
   name: "PlayersPoints",
-  components: {},
+  components: {
+    SectionHeader
+  },
   data() {
     return {
       // currentRound: undefined,

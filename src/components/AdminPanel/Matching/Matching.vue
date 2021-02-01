@@ -1,5 +1,7 @@
 <template>
   <div class="section-container">
+    <SectionHeader title="Matching Section" />
+
     <div class="pagination">
       <vs-pagination
         :total="Math.ceil(Object.keys(emptyMatching).length / 30)"
@@ -67,10 +69,13 @@
 import { mapActions, mapGetters } from "vuex";
 import { DATA_URL } from "../../../common";
 import "material-icons/iconfont/material-icons.css";
+import SectionHeader from '../../common/SectionHeader'
 
 export default {
   name: "Matching",
-  components: {},
+  components: {
+    SectionHeader
+  },
   data() {
     return {
       page: 1,

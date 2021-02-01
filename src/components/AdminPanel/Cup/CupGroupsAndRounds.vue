@@ -1,6 +1,6 @@
 <template>
   <div class="cup-section-container" v-if="users">
-    <h1 class="section-header">Cup Section</h1>
+    <SectionHeader title="Cup Section" />
 
     <!-- CREATE NEW CUP GROUP BUTTON and POPUP -->
     <vs-popup
@@ -213,6 +213,7 @@ import AddCupRoundForm from "./AddCupRoundForm";
 // import { getAllPlayersDataNormal } from "../../../utils/getAllPlayersData";
 import { DATA_URL } from "../../../common";
 import { mapActions, mapGetters } from "vuex";
+import SectionHeader from '../../common/SectionHeader'
 // import getAllLeagues from "../../../utils/getAllLeagues";
 // import { getCurrentRound } from "../../../utils/getCurrentRound";
 // import uploadAllPlayers from "../../../utils/uploadAllPlayers";
@@ -226,6 +227,7 @@ export default {
   components: {
     AddCupGroupForm,
     AddCupRoundForm,
+    SectionHeader
   },
   data() {
     return {

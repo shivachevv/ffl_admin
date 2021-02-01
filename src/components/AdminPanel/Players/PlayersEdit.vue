@@ -1,6 +1,7 @@
 <template>
   <div class="players-edit-container">
-    <h1 class="section-header">Edit Players personal details section</h1>
+    <SectionHeader title="Edit Players personal details section" />
+    
     <!-- CREATE NEW PLAYER BUTTON and POPUP -->
     <vs-popup
       class="holamundo"
@@ -253,10 +254,13 @@ import AddPlayerForm from "./AddPlayerForm";
 import { setLastUpdateDB } from "../../../utils/setLastUpdate";
 import updateLightPlayers from "../../../utils/updateLightPlayers";
 import { mapActions, mapGetters } from "vuex";
+import SectionHeader from '../../common/SectionHeader'
+
 export default {
   name: "PlayersEdit",
   components: {
     AddPlayerForm,
+    SectionHeader
   },
   data() {
     return {
