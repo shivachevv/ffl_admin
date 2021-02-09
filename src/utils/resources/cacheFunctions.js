@@ -1,4 +1,4 @@
-import { DATA_URL } from '../../common'
+// import { DATA_URL } from '../../common'
 const cacheName = "ffl-cache"
 // const lastUpdateUrl = `${DATA_URL}lastUpdate.json`
 // const playersUrl = `${DATA_URL}players.json`
@@ -6,7 +6,8 @@ const cacheName = "ffl-cache"
 
 
 const getCachedResource = async (type) => {
-    const url = `${DATA_URL}${type}.json`
+    // const url = `${DATA_URL}${type}.json`
+    const url = type
 
     const cache = await caches.open(cacheName);
     if (cache) {
@@ -19,9 +20,14 @@ const getCachedResource = async (type) => {
     }
 }
 
-const setCachedResource = async (type) => {
+const setCachedResource = async (type, data) => {
     const cache = await caches.open("ffl-cache");
-    cache.add(`${DATA_URL + type}.json`);
+    const dataString = JSON.stringify(data)
+    try {
+        cache.put(type, new Response(dataString))
+    } catch (error) {
+        console.log(error);
+    }
     return
 }
 

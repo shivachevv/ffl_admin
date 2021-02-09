@@ -42,6 +42,7 @@ export default {
   watch: {},
   async created() {
     this.$vs.loading();
+    await this.fetchPlayers();
     this.fetchCup();
     this.fetchCurrentRound();
     this.fetchH2h();
@@ -50,8 +51,7 @@ export default {
     this.fetchStandings();
     this.fetchTransfers();
     this.fetchUsers();
-    // this.fetchCathegorizedPlayers()
-    await this.fetchPlayers();
+
     this.$vs.loading.close();
   },
 };

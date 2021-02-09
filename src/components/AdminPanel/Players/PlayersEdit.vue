@@ -288,7 +288,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions(["fetchCathegorizedPlayers"]),
+    ...mapActions(["fetchCathegorizedPlayers", "fetchPlayers"]),
     closePopup() {
       return (this.showPopup = false);
     },
@@ -356,7 +356,7 @@ export default {
           console.log("Success:", data);
           this.$vs.loading();
           this.deselectPlayer();
-          await this.fetchCathegorizedPlayers();
+          await this.fetchPlayers();
           setLastUpdateDB();
           updateLightPlayers();
           this.success = true;
@@ -410,7 +410,7 @@ export default {
           .then(async () => {
             this.playerSelected = "";
             this.$vs.loading();
-            await this.fetchCathegorizedPlayers();
+            await this.fetchPlayers();
             setLastUpdateDB();
             updateLightPlayers();
             this.$vs.loading.close();
@@ -449,8 +449,6 @@ export default {
     },
   },
   async created() {
-    // this.$vs.loading();
-    // await this.fetchCathegorizedPlayers();
   },
 };
 </script>

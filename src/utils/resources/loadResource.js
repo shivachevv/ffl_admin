@@ -21,7 +21,7 @@ const loadResource = async (type) => {
         const etag = response.headers.etag;
         localStorage.setItem(`${type}Etag`, etag);
 
-        setCachedResource(type)
+        await setCachedResource(type, response.data)
 
         return response.data
     } catch (error) {
@@ -37,7 +37,7 @@ const loadResource = async (type) => {
 
                 console.log(`load ${type} from DB2`);
 
-                setCachedResource(type)
+                await setCachedResource(type, response.data)
 
                 return response.data
             }
