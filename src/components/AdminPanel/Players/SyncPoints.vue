@@ -1,8 +1,5 @@
 <template>
   <div class="sync-points-container" v-if="players && currentRound">
-    <h1 class="section-header">
-      Sync Player Points Section. Current round is: {{ currentRound }}
-    </h1>
     <SectionHeader
       :title="`Sync Player Points Section. Current round is: ${currentRound}`"
     />

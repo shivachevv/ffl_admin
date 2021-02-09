@@ -1,15 +1,40 @@
 <template>
   <div class="admin-home-container">
-    <h1>FFL Admin panel</h1>
+    <SectionHeader title="FFL Admin panel" />
+    <div class="shortcuts">
+      <router-link
+        class="shortcut sha"
+        v-for="(shortcut, i) in shortcuts"
+        :key="i"
+        :to="shortcut.path"
+        >{{ shortcut.title }}</router-link
+      >
+    </div>
   </div>
 </template>
 
+
 <script>
+import SectionHeader from "../../common/SectionHeader";
+
 export default {
   name: "AdminHomeSection",
-  components: {},
+  components: {
+    SectionHeader,
+  },
   data() {
-    return {};
+    return {
+      shortcuts: [
+        {
+          path: "/matching",
+          title: "Matching",
+        },
+        {
+          path: "/sync-points",
+          title: "Sync Points",
+        },
+      ],
+    };
   },
   methods: {},
   computed: {},
@@ -26,19 +51,31 @@ export default {
 .admin-home-container {
   width: 100%;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 
-  h1 {
-    width: 50%;
-    background-color: #793638;
-    color: #f2f6db;
-    font-size: 1rem;
-    font-weight: bold;
-    text-align: center;
-    margin: 30px 0 0 0;
-    padding: 10px;
+  .shortcuts {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+    .shortcut {
+      display: inline-block;
+      margin: 20px;
+      padding: 30px;
+      background-color: #893f40;
+      color: white;
+      border-radius: 10px;
+      transition: all 0.2s;
+
+      &:hover {
+        background-color: darken($color: #893f40, $amount: 10);
+
+      }
+    }
   }
 }
 </style>

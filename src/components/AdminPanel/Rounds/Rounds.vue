@@ -116,12 +116,12 @@ export default {
         .then(async () => {
           await this.fetchUsers();
           this.success = true;
-          this.$vs.loading.close();
+          // this.$vs.loading.close();
         })
         .catch((error) => {
           console.error("Error:", error);
           this.error = true;
-          this.$vs.loading.close();
+          // this.$vs.loading.close();
           this.errorMsg = error;
         });
     },

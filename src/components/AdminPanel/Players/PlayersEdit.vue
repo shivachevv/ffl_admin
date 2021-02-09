@@ -360,6 +360,7 @@ export default {
           setLastUpdateDB();
           updateLightPlayers();
           this.success = true;
+          this.$vs.loading.close();
         })
         .catch((error) => {
           console.error("Error:", error);
