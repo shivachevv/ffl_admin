@@ -68,8 +68,8 @@
 
 <script>
 // import makeNewH2HRound from "../../../models/H2HRound";
-import { DATA_URL } from "../../../common";
-import { mapActions } from "vuex";
+import { DATA_URL } from '../../../common'
+import { mapActions } from 'vuex'
 // import getAllLeagues from "../../../utils/getAllLeagues";
 // import { addPlayerPts, makeNewPlayer } from "../../../models/Player";
 // import { getAllPlayersDataCathegorized } from "../../../utils/getAllPlayersData";
@@ -77,18 +77,18 @@ import { mapActions } from "vuex";
 // import { getCurrentRound } from "../../../utils/getCurrentRound";
 
 export default {
-  name: "AddCupRoundForm",
+  name: 'AddCupRoundForm',
   props: {
     group: {
       required: true,
-      type: Object,
+      type: Object
     },
     users: {
       required: true,
-      type: Object,
-    },
+      type: Object
+    }
   },
-  data() {
+  data () {
     return {
       newRound: undefined,
       selectedUser: undefined,
@@ -98,59 +98,57 @@ export default {
       //   showClub: false,
       //   positions: ["GK", "DL", "DC", "DR", "ML", "MC", "MR", "ST"],
       error: false,
-      errorMsg: "",
-      success: false,
-    };
+      errorMsg: '',
+      success: false
+    }
   },
   methods: {
-    ...mapActions([
-      "fetchCup",
-    ]),
-    async addRoundHandler() {
+    ...mapActions(['fetchCup']),
+    async addRoundHandler () {
       if (this.isNewRoundOK()) {
-        await this.fetchNewCupRound(this.newRound);
+        await this.fetchNewCupRound(this.newRound)
       } else {
-        this.error = true;
-        this.errorMsg = "Please fill all fields correctly!";
+        this.error = true
+        this.errorMsg = 'Please fill all fields correctly!'
       }
     },
-    isNewRoundOK() {
-      const { newRound } = this;
-      let flag = true;
-      Object.keys(newRound).forEach((matchId) => {
-        if (matchId !== "roundHeld") {
-          const match = newRound[matchId];
-          if (match.team1.id === "" || match.team2.id === "") {
-            flag = false;
+    isNewRoundOK () {
+      const { newRound } = this
+      let flag = true
+      Object.keys(newRound).forEach(matchId => {
+        if (matchId !== 'roundHeld') {
+          const match = newRound[matchId]
+          if (match.team1.id === '' || match.team2.id === '') {
+            flag = false
           }
         }
-      });
-      return flag;
-    },
-    fetchNewCupRound(payload) {
-      const { name, rounds } = this.group;
-      const roundNum = rounds ? Object.keys(rounds).length + 1 : 1;
-      this.$vs.loading();
-      return fetch(`${DATA_URL}cup/${name}/rounds/r${roundNum}.json`, {
-        method: "PATCH",
-        mode: "cors",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
       })
-        .then((response) => response.json())
-        .then(async (data) => {
-          console.log("Success:", data);
-          this.$vs.loading.close();
+      return flag
+    },
+    fetchNewCupRound (payload) {
+      const { name, rounds } = this.group
+      const roundNum = rounds ? Object.keys(rounds).length + 1 : 1
+      this.$vs.loading()
+      return fetch(`${DATA_URL}cup/${name}/rounds/r${roundNum}.json`, {
+        method: 'PATCH',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
+        .then(response => response.json())
+        .then(async data => {
+          console.log('Success:', data)
+          this.$vs.loading.close()
           await this.fetchCup()
-          this.success = true;
+          this.success = true
         })
-        .catch((error) => {
-          console.error("Error:", error);
-          this.error = true;
-          this.errorMsg = error;
-        });
+        .catch(error => {
+          console.error('Error:', error)
+          this.error = true
+          this.errorMsg = error
+        })
     },
     // createEditedUsers(leagueId, leagueTeams) {
     //   let copy = JSON.parse(JSON.stringify(this.users));
@@ -241,139 +239,175 @@ export default {
     //       this.errorMsg = err;
     //     });
     // }
-    calculateMatchCount() {
-      this.groupMatchCount = Math.floor(this.group.teams.length / 2);
-      const value = this.groupMatchCount;
+    calculateMatchCount () {
+      this.groupMatchCount = Math.floor(this.group.teams.length / 2)
+      const value = this.groupMatchCount
       if (value === 1) {
         this.newRound = {
           match1: {
             team1: {
-              id: "",
+              id: ''
             },
             team2: {
-              id: "",
-            },
+              id: ''
+            }
           },
-          roundHeld: "",
-        };
+          roundHeld: ''
+        }
       } else if (value === 2) {
         this.newRound = {
           match1: {
             team1: {
-              id: "",
+              id: ''
             },
             team2: {
-              id: "",
-            },
+              id: ''
+            }
           },
           match2: {
             team1: {
-              id: "",
+              id: ''
             },
             team2: {
-              id: "",
-            },
+              id: ''
+            }
           },
-          roundHeld: "",
-        };
+          roundHeld: ''
+        }
       } else if (value === 3) {
         this.newRound = {
           match1: {
             team1: {
-              id: "",
+              id: ''
             },
             team2: {
-              id: "",
-            },
+              id: ''
+            }
           },
           match2: {
             team1: {
-              id: "",
+              id: ''
             },
             team2: {
-              id: "",
-            },
+              id: ''
+            }
           },
           match3: {
             team1: {
-              id: "",
+              id: ''
             },
             team2: {
-              id: "",
-            },
+              id: ''
+            }
           },
-          roundHeld: "",
-        };
+          roundHeld: ''
+        }
       } else if (value === 8) {
         this.newRound = {
           match1: {
             team1: {
-              id: "",
+              id: ''
             },
             team2: {
-              id: "",
-            },
+              id: ''
+            }
           },
           match2: {
             team1: {
-              id: "",
+              id: ''
             },
             team2: {
-              id: "",
-            },
+              id: ''
+            }
           },
           match3: {
             team1: {
-              id: "",
+              id: ''
             },
             team2: {
-              id: "",
-            },
+              id: ''
+            }
           },
           match4: {
             team1: {
-              id: "",
+              id: ''
             },
             team2: {
-              id: "",
-            },
+              id: ''
+            }
           },
           match5: {
             team1: {
-              id: "",
+              id: ''
             },
             team2: {
-              id: "",
-            },
+              id: ''
+            }
           },
           match6: {
             team1: {
-              id: "",
+              id: ''
             },
             team2: {
-              id: "",
-            },
+              id: ''
+            }
           },
           match7: {
             team1: {
-              id: "",
+              id: ''
             },
             team2: {
-              id: "",
-            },
+              id: ''
+            }
           },
           match8: {
             team1: {
-              id: "",
+              id: ''
             },
             team2: {
-              id: "",
-            },
+              id: ''
+            }
           },
-          roundHeld: "",
-        };
+          roundHeld: ''
+        }
+      } else if (value === 4) {
+        this.newRound = {
+          match1: {
+            team1: {
+              id: ''
+            },
+            team2: {
+              id: ''
+            }
+          },
+          match2: {
+            team1: {
+              id: ''
+            },
+            team2: {
+              id: ''
+            }
+          },
+          match3: {
+            team1: {
+              id: ''
+            },
+            team2: {
+              id: ''
+            }
+          },
+          match4: {
+            team1: {
+              id: ''
+            },
+            team2: {
+              id: ''
+            }
+          },
+          roundHeld: ''
+        }
       }
-    },
+    }
   },
   computed: {
     // groupMatchCount() {
@@ -391,18 +425,19 @@ export default {
     //     this.newPlayer["shirt"] = teamCodes[nv];
     //   }
     // },
-    success(nv) {
+    success (nv) {
       if (nv === true) {
         setTimeout(() => {
-          this.success = false;
-        }, 2000);
+          this.success = false
+        }, 2000)
       }
-    },
+    }
   },
-  created() {
-    this.calculateMatchCount();
-  },
-};
+  created () {
+    this.calculateMatchCount()
+    console.log(this.newRound)
+  }
+}
 </script>
 
 <style lang="scss">
@@ -442,7 +477,7 @@ export default {
 
         &::after {
           position: absolute;
-          content: "x";
+          content: 'x';
           top: 3px;
           right: 7px;
           width: 5px;

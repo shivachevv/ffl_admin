@@ -111,7 +111,7 @@
         :active.sync="showPopup2"
       >
         <AddCupRoundForm
-          v-if="popupGroup"
+          v-if="popupGroup && showPopup2"
           :group="popupGroup"
           :users="users"
         />

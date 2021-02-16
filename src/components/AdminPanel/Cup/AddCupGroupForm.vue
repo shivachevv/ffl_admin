@@ -153,7 +153,7 @@ export default {
         .then(async data => {
           console.log("Success:", data);
           this.$vs.loading.close();
-          await this.fetchCup
+          await this.fetchCup()
           this.success = true;
         })
         .catch(error => {
